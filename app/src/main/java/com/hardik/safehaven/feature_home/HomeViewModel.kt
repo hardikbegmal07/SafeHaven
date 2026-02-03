@@ -14,8 +14,8 @@ class HomeViewModel(
     // logic is not tied to UI lifecycle
     // Android manages it for us ...
 
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
+    // private val _uiState = MutableStateFlow(HomeUiState())
+    // val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
     // if this stateflow emits a new value, UI recompose ...
 
     private val _items = MutableStateFlow<List<SecureItem>>(emptyList())

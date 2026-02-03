@@ -76,15 +76,3 @@ fun HomeScreen(
 //        Button(onClick = onViewClick) { Text("View Item") }
 //    }
 }
-
-@Composable
-fun SecureItemRow(item: SecureItem, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick() }
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(item.title, fontWeight = FontWeight.Bold)
-            Text(item.type)
-        }
-    }
-}

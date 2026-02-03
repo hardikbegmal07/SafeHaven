@@ -29,7 +29,7 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
         startDestination = Screen.Home.route
     ) {
 
-        // HOME
+        // HOME screen
         composable(Screen.Home.route) {
             val viewModel = remember {
                 HomeViewModel(repository)
@@ -42,7 +42,7 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
             )
         }
 
-        // ADD ITEM
+        // ADD ITEM screen
         composable(Screen.AddItem.route) {
             val viewModel = remember {
                 AddItemViewModel(repository)
@@ -56,7 +56,7 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
             )
         }
 
-        // VIEW ITEM
+        // VIEW ITEM screen
         composable(
             Screen.ViewItem.route,
             arguments = listOf(
@@ -83,8 +83,9 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
             )
         }
 
+        // SETTINGS screen
         composable(Screen.Settings.route) {
             Text("Settings (Coming Soon)")
         }
     }
-}
+} // describes all the screens of our app, and how we move between them
