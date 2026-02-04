@@ -1,15 +1,16 @@
 package com.hardik.safehaven.feature_home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hardik.safehaven.data.repository.SecureItemRepository
 import com.hardik.safehaven.domain.model.SecureItem
-import kotlinx.coroutines.flow.MutableStateFlow
+// import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 
 class HomeViewModel(
-    private val repository: SecureItemRepository
+    repository: SecureItemRepository
 ) : ViewModel() { // state survive configuration changes
     // logic is not tied to UI lifecycle
     // Android manages it for us ...
@@ -18,16 +19,14 @@ class HomeViewModel(
     // val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
     // if this stateflow emits a new value, UI recompose ...
 
-    private val _items = MutableStateFlow<List<SecureItem>>(emptyList())
-    val items : StateFlow<List<SecureItem>> = _items.asStateFlow()
-
-    init {
-        loadItems()
-    }
-
-    private fun loadItems() {
-        _items.value = repository.getItems()
-    }
+    // private val _items = MutableStateFlow<List<SecureItem>>(emptyList())
+    val items : StateFlow<List<SecureItem>> =
+        repository.getItems()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
+            )
 
 //    fun loadItems() {
 //        _uiState.update {

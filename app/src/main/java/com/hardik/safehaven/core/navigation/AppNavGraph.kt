@@ -50,7 +50,6 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
             AddItemScreen(
                 viewModel,
                 onSave = {
-                    viewModel.saveItem()
                     navController.popBackStack()
                 }
             )

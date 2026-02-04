@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -25,7 +28,7 @@ fun AddItemScreen(
     viewModel: AddItemViewModel,
     onSave: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(30.dp)) {
         TextField(
             value = viewModel.title,
             onValueChange = { viewModel.title = it },
@@ -58,6 +61,7 @@ fun AddItemScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemTypeDropdown(
     selected: String,
@@ -65,12 +69,43 @@ fun ItemTypeDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box {
-        Button(onClick = { expanded = true }) {
-            Text(selected)
-        }
+//    Box {
+//        Button(onClick = { expanded = true }) {
+//            Text(selected)
+//        }
+//
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false }
+//        ) {
+//            ItemType.entries.forEach {
+//                DropdownMenuItem(
+//                    text = { Text(it.name) },
+//                    onClick = {
+//                        onSelected(it.name)
+//                        expanded = false
+//                    }
+//                )
+//            }
+//        }
+//    }
 
-        DropdownMenu(
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        TextField(
+            value = selected,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Item Type") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+            },
+            modifier = Modifier.menuAnchor()
+        )
+
+        ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {

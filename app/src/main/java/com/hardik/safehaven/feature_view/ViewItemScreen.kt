@@ -25,7 +25,7 @@ fun ViewItemScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(30.dp)
     ) {
         Text(item.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
