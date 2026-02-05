@@ -6,6 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.hardik.safehaven.core.theme.SafeHavenTheme
 
+// Week3
+//  Rule of this week:
+//  -> UI never talks to Room
+//  -> viewModels can never talk to room
+//  -> Room never knows about compose
+//  -> Domain models (data classes that represent core business entities) never depend on ROOM
+
 class MainActivity : ComponentActivity() { // Component Activity - is a base class that
     // supports lifecycle (lifecycle handling)
     // supports viewModels (viewModel stores)
