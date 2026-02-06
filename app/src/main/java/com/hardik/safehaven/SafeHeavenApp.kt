@@ -6,6 +6,21 @@ import androidx.navigation.compose.rememberNavController
 import com.hardik.safehaven.core.navigation.AppNavGraph
 import com.hardik.safehaven.data.repository.FakeSecureItemRepository
 
+/*
+    Our APP is a factory.
+    Data enters raw, gets cleaned, shaped. decided upon, and finally shown to the user.
+
+    Room -> Entity -> Mapper -> Domain -> UseCase -> ViewModel -> UI
+
+    Entity   : "How data is stored"
+    Mapper   : "Translator between worlds"
+    Domain   : "The truth of our app"
+    Use-Case : “What the app can do”
+
+    SecureItemEntity <-> SecureItem
+ */
+
+
 @Composable
 fun SafeHeavenApp() {
 
