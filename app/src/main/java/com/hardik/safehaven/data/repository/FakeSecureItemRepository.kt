@@ -4,7 +4,7 @@ import com.hardik.safehaven.domain.model.SecureItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeSecureItemRepository : SecureItemRepository {
+class FakeSecureItemRepository : SecureItemRepositoryForStaticData {
 
     private val items = MutableStateFlow<List<SecureItem>>(emptyList())
 

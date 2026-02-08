@@ -4,12 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.hardik.safehaven.data.repository.SecureItemRepository
+import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
 import com.hardik.safehaven.domain.model.SecureItem
 import java.util.UUID
 
 class AddItemViewModel(
-    private val repository: SecureItemRepository
+    private val repository: SecureItemRepositoryForStaticData
 ) : ViewModel() {
 
     var title by mutableStateOf("")

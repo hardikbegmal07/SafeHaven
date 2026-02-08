@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.hardik.safehaven.data.repository.SecureItemRepository
+import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
 import com.hardik.safehaven.feature_add.AddItemScreen
 import com.hardik.safehaven.feature_add.AddItemViewModel
 import com.hardik.safehaven.feature_home.HomeScreen
@@ -22,7 +22,7 @@ import com.hardik.safehaven.feature_view.ViewItemViewModel
 // III) instead of navigation, magically created screens (separation = testing + sanity)
 
 @Composable
-fun AppNavGraph(navController: NavHostController, repository: SecureItemRepository) {
+fun AppNavGraph(navController: NavHostController, repository: SecureItemRepositoryForStaticData) {
 
     NavHost(
         navController = navController,

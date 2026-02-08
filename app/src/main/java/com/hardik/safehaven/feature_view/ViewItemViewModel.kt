@@ -1,11 +1,11 @@
 package com.hardik.safehaven.feature_view
 
 import androidx.lifecycle.ViewModel
-import com.hardik.safehaven.data.repository.SecureItemRepository
+import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
 import com.hardik.safehaven.domain.model.SecureItem
 
 class ViewItemViewModel(
-    private val repository: SecureItemRepository,
+    private val repository: SecureItemRepositoryForStaticData,
     private val itemId: String
 ) : ViewModel() {
 

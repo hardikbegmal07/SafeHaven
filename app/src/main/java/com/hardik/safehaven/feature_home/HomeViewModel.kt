@@ -2,7 +2,7 @@ package com.hardik.safehaven.feature_home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hardik.safehaven.data.repository.SecureItemRepository
+import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
 import com.hardik.safehaven.domain.model.SecureItem
 // import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 class HomeViewModel(
-    repository: SecureItemRepository
+    repository: SecureItemRepositoryForStaticData
 ) : ViewModel() { // state survive configuration changes
     // logic is not tied to UI lifecycle
     // Android manages it for us ...
