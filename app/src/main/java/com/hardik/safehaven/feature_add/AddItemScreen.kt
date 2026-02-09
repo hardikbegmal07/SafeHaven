@@ -1,13 +1,11 @@
 package com.hardik.safehaven.feature_add
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -64,8 +62,8 @@ fun AddItemScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemTypeDropdown(
-    selected: String,
-    onSelected: (String) -> Unit
+    selected: ItemType,
+    onSelected: (ItemType) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -95,7 +93,7 @@ fun ItemTypeDropdown(
         onExpandedChange = { expanded = !expanded }
     ) {
         TextField(
-            value = selected,
+            value = selected.name,
             onValueChange = {},
             readOnly = true,
             label = { Text("Item Type") },
@@ -109,11 +107,11 @@ fun ItemTypeDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            ItemType.entries.forEach {
+            ItemType.entries.forEach { type ->
                 DropdownMenuItem(
-                    text = { Text(it.name) },
+                    text = { Text(type.name) },
                     onClick = {
-                        onSelected(it.name)
+                        onSelected(type)
                         expanded = false
                     }
                 )

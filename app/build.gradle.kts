@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.hardik.safehaven"
-    compileSdk = 34
+    compileSdk = 36
 
 //    compileSdk {
 //        version = release(36)
@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.hardik.safehaven"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -69,6 +69,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7") // for rememberNavController() ....
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -38,6 +38,11 @@ class SecureItemRepositoryImpl(
                 entities.map { it.toDomain() }
             }
     }
+
+    override fun getItemById(id: String): Flow<SecureItem?> {
+        return dao.getItemById(id)
+            .map { it?.toDomain() }
+    }
 }
 // What problem does this solve??
 

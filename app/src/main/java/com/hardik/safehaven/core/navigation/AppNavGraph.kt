@@ -8,7 +8,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
+import com.hardik.safehaven.domain.usecase.AddItemUseCase
+import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
+import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
+import com.hardik.safehaven.domain.usecase.GetItemsUseCase
 import com.hardik.safehaven.feature_add.AddItemScreen
 import com.hardik.safehaven.feature_add.AddItemViewModel
 import com.hardik.safehaven.feature_home.HomeScreen
@@ -22,7 +25,13 @@ import com.hardik.safehaven.feature_view.ViewItemViewModel
 // III) instead of navigation, magically created screens (separation = testing + sanity)
 
 @Composable
-fun AppNavGraph(navController: NavHostController, repository: SecureItemRepositoryForStaticData) {
+fun AppNavGraph(
+    navController: NavHostController,
+    addItemUseCase: AddItemUseCase,
+    getItemsUseCase: GetItemsUseCase,
+    getItemByIdUseCase: GetItemByIdUseCase,
+    deleteItemUseCase: DeleteItemUseCase
+) {
 
     NavHost(
         navController = navController,
@@ -32,7 +41,7 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
         // HOME screen
         composable(Screen.Home.route) {
             val viewModel = remember {
-                HomeViewModel(repository)
+                HomeViewModel(getItemsUseCase)
             }
             HomeScreen(
                 viewModel = viewModel,
@@ -45,7 +54,7 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
         // ADD ITEM screen
         composable(Screen.AddItem.route) {
             val viewModel = remember {
-                AddItemViewModel(repository)
+                AddItemViewModel(addItemUseCase)
             }
             AddItemScreen(
                 viewModel,
@@ -69,8 +78,9 @@ fun AppNavGraph(navController: NavHostController, repository: SecureItemReposito
 
             val viewModel = remember {
                 ViewItemViewModel(
-                    repository,
-                    itemId
+                    itemId,
+                    getItemByIdUseCase,
+                    deleteItemUseCase
                 )
             }
 

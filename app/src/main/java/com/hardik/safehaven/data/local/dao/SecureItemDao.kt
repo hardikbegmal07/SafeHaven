@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.hardik.safehaven.data.local.entity.SecureItemEntity
+import com.hardik.safehaven.domain.model.SecureItem
 import kotlinx.coroutines.flow.Flow
 
 // DAO - Data Access Object
@@ -40,6 +41,9 @@ interface SecureItemDao {
     //  ii) Prevents SQL injection
     //  iii) Generates the final SQL
     // suspend because DB work is slow
+
+    @Query("SELECT * FROM secure_items WHERE id = :id")
+    fun getItemById(id: String): Flow<SecureItemEntity?>
 
 }
 // This file is ROOM's instruction manual

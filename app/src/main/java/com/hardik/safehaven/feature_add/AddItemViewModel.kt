@@ -4,27 +4,45 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
+import com.hardik.safehaven.domain.model.ItemType
 import com.hardik.safehaven.domain.model.SecureItem
+import com.hardik.safehaven.domain.usecase.AddItemUseCase
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class AddItemViewModel(
-    private val repository: SecureItemRepositoryForStaticData
+    // private val repository: SecureItemRepositoryForStaticData
+    private val addItemUseCase: AddItemUseCase
 ) : ViewModel() {
 
     var title by mutableStateOf("")
     var content by mutableStateOf("")
-    var type by mutableStateOf("")
+    var type by mutableStateOf(ItemType.NOTE)
 
     fun saveItem() {
-        val item = SecureItem(
-            id = UUID.randomUUID().toString(),
-            title = title,
-            content = content,
-            type = type,
-            createdAt = System.currentTimeMillis()
-        )
+        viewModelScope.launch {
+            addItemUseCase(
+                SecureItem(
+                    id = "",
+                    title = title,
+                    content = content,
+                    type = type.name,
+                    createdAt = System.currentTimeMillis()
+                )
+            )
+        }
 
-        repository.addItem(item)
+
+//        val item = SecureItem(
+//            id = UUID.randomUUID().toString(),
+//            title = title,
+//            content = content,
+//            type = type,
+//            createdAt = System.currentTimeMillis()
+//        )
+
+        // repository.addItem(item)
     }
 }

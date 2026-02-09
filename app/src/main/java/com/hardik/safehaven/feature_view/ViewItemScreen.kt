@@ -9,29 +9,34 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun ViewItemScreen(
     viewModel: ViewItemViewModel,
     onDelete: () -> Unit
 ) {
-    val item = viewModel.item ?: return
+    val item by viewModel.item.collectAsStateWithLifecycle()
+
+    if(item == null) return
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(30.dp)
     ) {
-        Text(item.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Text(item!!.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
-        Text("Type: ${item.type}")
+        Text("Type: ${item!!.type}")
         Spacer(Modifier.height(8.dp))
-        Text(item.content)
+        Text(item!!.content)
 
         Spacer(Modifier.height(24.dp))
 

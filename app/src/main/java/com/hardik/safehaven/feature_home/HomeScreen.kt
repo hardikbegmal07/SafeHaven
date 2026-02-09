@@ -1,6 +1,5 @@
 package com.hardik.safehaven.feature_home
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +34,7 @@ fun HomeScreen(
     onItemClick: (String) -> Unit,
     viewModel: HomeViewModel
 ) {
-    val items by viewModel.items.collectAsState() // subscribe to state changes and Keep UI in sync.
+    val uiState by viewModel.uiState.collectAsState() // subscribe to state changes and Keep UI in sync.
 
     Scaffold(
         floatingActionButton = {
@@ -44,14 +43,14 @@ fun HomeScreen(
             }
         }
     ) { padding ->
-        if(items.isEmpty()) {
+        if(uiState.items.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize().padding(padding),
                 contentAlignment = Alignment.Center) {
                 Text("No Secure Items yet")
             }
         } else {
             LazyColumn(modifier = Modifier.padding(padding)) {
-                items(items) { item ->
+                items(uiState.items) { item ->
                     SecureItemRow(item, onClick = { onItemClick(item.id) })
                 }
             }
