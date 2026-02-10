@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.hardik.safehaven"
-    compileSdk = 36
+    compileSdk = 35
 
 //    compileSdk {
 //        version = release(36)
@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.hardik.safehaven"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 

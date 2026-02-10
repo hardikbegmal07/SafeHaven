@@ -2,6 +2,7 @@ package com.hardik.safehaven.feature_home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hardik.safehaven.core.ui.state.UiState
 import com.hardik.safehaven.domain.model.SecureItem
 import com.hardik.safehaven.domain.usecase.GetItemsUseCase
 // import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +19,16 @@ class HomeViewModel(
     // Android manages it for us ...
 
     val uiState: StateFlow<HomeUiState> = getItemsUseCase()
-        .map { items -> HomeUiState(items = items) }
+        .map { items -> HomeUiState(
+            state = when {
+                items.isEmpty() -> UiState.Empty
+                else -> UiState.Success(items)
+            }
+        ) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HomeUiState()
+            initialValue = HomeUiState(state = UiState.Loading)
         )
 
     // private val _uiState = MutableStateFlow(HomeUiState())

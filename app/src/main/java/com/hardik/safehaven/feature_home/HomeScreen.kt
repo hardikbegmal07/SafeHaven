@@ -1,28 +1,23 @@
 package com.hardik.safehaven.feature_home
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hardik.safehaven.domain.model.SecureItem
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hardik.safehaven.core.ui.state.UiState
 
 // UI should reflect CURRENT STATE
 // LOGIC should live OUTSIDE UI
@@ -34,7 +29,7 @@ fun HomeScreen(
     onItemClick: (String) -> Unit,
     viewModel: HomeViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState() // subscribe to state changes and Keep UI in sync.
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle() // subscribe to state changes and Keep UI in sync.
 
     Scaffold(
         floatingActionButton = {
@@ -43,18 +38,47 @@ fun HomeScreen(
             }
         }
     ) { padding ->
-        if(uiState.items.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center) {
-                Text("No Secure Items yet")
-            }
-        } else {
-            LazyColumn(modifier = Modifier.padding(padding)) {
-                items(uiState.items) { item ->
-                    SecureItemRow(item, onClick = { onItemClick(item.id) })
+        Box(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            when (val state = uiState.state) {
+                UiState.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                UiState.Empty -> {
+                    Text("No secure Items yet")
+                }
+
+                is UiState.Error -> {
+                    Text(state.message)
+                }
+
+                is UiState.Success -> {
+                    LazyColumn {
+                        items(state.data, key = { it.id }) { item ->
+                            SecureItemRow(
+                                item = item,
+                                onClick = { onItemClick(item.id) }
+                            )
+                        }
+                    }
                 }
             }
         }
+//        if(uiState.items.isEmpty()) {
+//            Box(modifier = Modifier.fillMaxSize().padding(padding),
+//                contentAlignment = Alignment.Center) {
+//                Text("No Secure Items yet")
+//            }
+//        } else {
+//            LazyColumn(modifier = Modifier.padding(padding)) {
+//                items(uiState.items) { item ->
+//                    SecureItemRow(item, onClick = { onItemClick(item.id) })
+//                }
+//            }
+//        }
     }
     // why collectAsStateWithLifecycle() ?
     //  Stops collecting when screen is not visible
