@@ -43,11 +43,11 @@ fun HomeScreen(
             contentAlignment = Alignment.Center
         ) {
             when (val state = uiState.state) {
-                UiState.Loading -> {
+                is UiState.Loading -> {
                     CircularProgressIndicator()
                 }
 
-                UiState.Empty -> {
+                is UiState.Empty -> {
                     Text("No secure Items yet")
                 }
 
