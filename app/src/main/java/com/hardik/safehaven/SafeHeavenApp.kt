@@ -11,6 +11,7 @@ import com.hardik.safehaven.domain.usecase.AddItemUseCase
 import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
 import com.hardik.safehaven.domain.usecase.GetItemsUseCase
+import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
 
 /*
     Our APP is a factory.
@@ -38,6 +39,7 @@ fun SafeHeavenApp() {
     val getItemsUseCase = remember { GetItemsUseCase(repository) }
     val getItemByIdUseCase = remember { GetItemByIdUseCase(repository) }
     val deleteItemUseCase = remember { DeleteItemUseCase(repository) }
+    val validateItemUseCase = remember { ValidateItemUseCase() }
     val navController = rememberNavController() // creates navigation control
 
 //    val repository = remember {
@@ -51,7 +53,8 @@ fun SafeHeavenApp() {
         addItemUseCase = addItemUseCase,
         getItemsUseCase = getItemsUseCase,
         getItemByIdUseCase,
-        deleteItemUseCase = deleteItemUseCase
+        deleteItemUseCase = deleteItemUseCase,
+        validateItemUseCase = validateItemUseCase
     )
     // IMP : if we will create the repository inside each screen, every screen would have its own fake data,
     // and nothing would work together ...

@@ -13,6 +13,7 @@ import com.hardik.safehaven.domain.usecase.AddItemUseCase
 import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
 import com.hardik.safehaven.domain.usecase.GetItemsUseCase
+import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
 import com.hardik.safehaven.feature_add.AddItemScreen
 import com.hardik.safehaven.feature_add.AddItemViewModel
 import com.hardik.safehaven.feature_home.HomeScreen
@@ -31,7 +32,8 @@ fun AppNavGraph(
     addItemUseCase: AddItemUseCase,
     getItemsUseCase: GetItemsUseCase,
     getItemByIdUseCase: GetItemByIdUseCase,
-    deleteItemUseCase: DeleteItemUseCase
+    deleteItemUseCase: DeleteItemUseCase,
+    validateItemUseCase: ValidateItemUseCase
 ) {
 
     NavHost(
@@ -55,7 +57,7 @@ fun AppNavGraph(
         // ADD ITEM screen
         composable(Screen.AddItem.route) {
             val viewModel = remember {
-                AddItemViewModel(addItemUseCase)
+                AddItemViewModel(addItemUseCase, validateItemUseCase)
             }
             AddItemScreen(
                 viewModel,

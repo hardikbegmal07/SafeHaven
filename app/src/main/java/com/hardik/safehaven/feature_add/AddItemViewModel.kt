@@ -9,29 +9,45 @@ import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
 import com.hardik.safehaven.domain.model.ItemType
 import com.hardik.safehaven.domain.model.SecureItem
 import com.hardik.safehaven.domain.usecase.AddItemUseCase
+import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
+import com.hardik.safehaven.domain.validation.ValidationResult
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class AddItemViewModel(
     // private val repository: SecureItemRepositoryForStaticData
-    private val addItemUseCase: AddItemUseCase
+    private val addItemUseCase: AddItemUseCase,
+    private val validateItemUseCase: ValidateItemUseCase
 ) : ViewModel() {
 
     var title by mutableStateOf("")
     var content by mutableStateOf("")
     var type by mutableStateOf(ItemType.NOTE)
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error : StateFlow<String?> = _error
+
     fun saveItem() {
-        viewModelScope.launch {
-            addItemUseCase(
-                SecureItem(
-                    id = "",
-                    title = title,
-                    content = content,
-                    type = type.name,
-                    createdAt = System.currentTimeMillis()
-                )
-            )
+        when (val result = validateItemUseCase(title, content)) {
+            is ValidationResult.Error -> {
+                _error.value = result.message
+            }
+
+            ValidationResult.Success -> {
+                viewModelScope.launch {
+                    addItemUseCase(
+                        SecureItem(
+                            id = "",
+                            title = title,
+                            content = content,
+                            type = type.name,
+                            createdAt = System.currentTimeMillis()
+                        )
+                    )
+                }
+            }
         }
 
 
