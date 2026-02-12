@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hardik.safehaven.data.repository.SecureItemRepositoryForStaticData
 import com.hardik.safehaven.domain.model.ItemType
 import com.hardik.safehaven.domain.model.SecureItem
 import com.hardik.safehaven.domain.usecase.AddItemUseCase
@@ -29,7 +28,7 @@ class AddItemViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error : StateFlow<String?> = _error
 
-    fun saveItem() {
+    fun saveItem(onSuccess: () -> Unit) {
         when (val result = validateItemUseCase(title, content)) {
             is ValidationResult.Error -> {
                 _error.value = result.message
@@ -46,6 +45,7 @@ class AddItemViewModel(
                             createdAt = System.currentTimeMillis()
                         )
                     )
+                    onSuccess() // navigate after saving
                 }
             }
         }
