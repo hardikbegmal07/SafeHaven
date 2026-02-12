@@ -49,52 +49,60 @@ Data (Room / Encrypted Storage)
 * Handles data persistence and retrieval
 * Will use **Room** for local storage
 * Will introduce **encrypted storage** for sensitive data
-
 ---
 
 ## Why MVVM?
 
 The **MVVM (Model-View-ViewModel)** pattern was chosen to enforce clear responsibility boundaries:
 
-* **Separation of concerns**: UI, logic, and data are cleanly separated
-* **Testability**: ViewModels can be unit-tested without UI dependencies
-* **Lifecycle safety**: ViewModels survive configuration changes
-* **Scalability**: New features can be added without breaking existing code
+- **Separation of concerns**: UI, business logic, and data layers are cleanly separated
+- **Testability**: ViewModels and UseCases can be unit-tested independently
+- **Lifecycle safety**: ViewModels survive configuration changes
+- **Scalability**: New features (encryption, biometrics, backend sync) can be added without breaking existing code
 
-The UI layer remains a *pure renderer of state*, while all decisions and logic live in the ViewModel.
+The UI layer remains a *pure renderer of state*, while business logic lives in the ViewModel and Domain layer.
 
 ---
 
 ## Tech Stack
 
-* **Kotlin** – primary programming language
-* **Jetpack Compose** – modern declarative UI framework
-* **StateFlow** – reactive state management
-* **Navigation Compose** – in-app navigation
-* **Material 3** – modern UI components and theming
+- **Kotlin** – Primary programming language
+- **Jetpack Compose** – Modern declarative UI framework
+- **StateFlow & Flow** – Reactive state management
+- **Navigation Compose** – In-app navigation
+- **Room Database** – Local persistent storage
+- **Material 3** – Modern UI components and theming
 
 ---
 
-## Current Status (Week 1)
+## Current Status (Month 1)
 
-* Feature-based project structure
-* Navigation graph setup
-* Material 3 theme with dark mode support
-* MVVM architecture with `UiState` + `StateFlow`
-* Clean app entry point (`SafeHavenApp`)
+- Clean layered architecture (UI → ViewModel → Domain → Data)
+- Feature-based project structure
+- Repository pattern implementation
+- Domain layer with UseCases
+- Room database integration for local persistence
+- Reactive data flow using `Flow` + `StateFlow`
+- Proper UI state handling using sealed `UiState`
+- Input validation using sealed `ValidationResult`
+- Navigation graph setup (multi-screen structure)
+- Material 3 theming with dark mode support
+- Clean app entry point (`SafeHavenApp`)
+
+The application is now architecturally stable and ready for security-focused enhancements.
 
 ---
 
-## What’s Next
+## What’s Next (Month 2)
 
 Planned improvements and features:
 
-* **Room database** for persistent local storage
-* **Encryption** for sensitive data at rest
-* **Biometric authentication** (Fingerprint / Face)
-* Repository pattern
-* Use cases in the domain layer
-* Improved UI and user experience
+- **Encryption** for sensitive data at rest (AES / Encrypted storage)
+- **Android Keystore integration** for secure key management
+- **Biometric authentication** (Fingerprint / Face unlock)
+- Secure data access flow
+- Improved UI polish and user experience
+- Unit testing for ViewModel and Domain layer
 
 ---
 
@@ -102,9 +110,9 @@ Planned improvements and features:
 
 This project is built to:
 
-* Demonstrate real-world Android architecture
-* Serve as a strong portfolio project
-* Practice security-focused Android development
-* Learn scalable app design principles
+- Demonstrate real-world Android architecture
+- Serve as a strong portfolio project
+- Practice security-focused Android development
+- Learn scalable and maintainable app design principles
 
-SafeHaven prioritizes **clarity, correctness, and long-term maintainability** over shortcuts.
+SafeHaven prioritizes **clarity, correctness, security awareness, and long-term maintainability** over shortcuts.
