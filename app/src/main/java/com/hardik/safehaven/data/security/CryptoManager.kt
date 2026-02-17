@@ -148,6 +148,22 @@ class CryptoManager {
     //  created GCMParameterSpec with IV (initialization vector)
     //  initialize cipher with key + IV
     //  decrypt
+
+    fun encryptSafe(plainText: String): CryptoResult<EncryptedData> {
+        return try {
+            CryptoResult.Success(encrypt(plainText))
+        } catch (e: Exception) {
+            CryptoResult.Error(e)
+        }
+    }
+
+    fun decryptSafe(cipherText: String, iv: String) : CryptoResult<String> {
+        return try {
+            CryptoResult.Success(decrypt(cipherText, iv))
+        } catch (e: Exception) {
+            CryptoResult.Error(e)
+        }
+    }
 }
 
 // CryptoManager is a local encryption engine for SafeHaven.
