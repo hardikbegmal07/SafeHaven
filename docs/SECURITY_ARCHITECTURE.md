@@ -83,7 +83,7 @@ Specific sensitive fields:
 - secret
 
 ### How It Works
-We use AES-GCM (Authenticated Encryption).
+We use AES-GCM (Authenticated Encryption). (Advance Encryption Standards in Galois/Counter Mode)
 
 AES-GCM provides:
 - Confidentiality (encryption)
@@ -199,12 +199,12 @@ Not Protected:
 
 # 9. Security Strength Summary
 
-| Layer | Protection Type |
-|-------|------------------|
-| Android Keystore | Secure key storage |
-| AES-GCM | Field confidentiality + integrity |
-| SQLCipher | Database-level encryption |
-| Passphrase encryption | Secure DB unlock |
+| Layer                 | Protection Type                   |
+|-----------------------|-----------------------------------|
+| Android Keystore      | Secure key storage                |
+| AES-GCM               | Field confidentiality + integrity |
+| SQLCipher             | Database-level encryption         |
+| Passphrase encryption | Secure DB unlock                  |
 
 This layered approach significantly increases attack difficulty.
 
@@ -240,6 +240,3 @@ By combining:
 - Clean Architecture
 
 The app ensures strong protection of sensitive user data against local attacks.
-
-Security is not an afterthought.
-It is a foundational design decision.
