@@ -38,7 +38,7 @@ class AddItemViewModel(
                 viewModelScope.launch {
                     addItemUseCase(
                         SecureItem(
-                            id = "",
+                            id = UUID.randomUUID().toString(),
                             title = title,
                             content = content,
                             type = type.name,

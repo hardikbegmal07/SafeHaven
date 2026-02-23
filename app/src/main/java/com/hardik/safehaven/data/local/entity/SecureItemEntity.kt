@@ -21,7 +21,9 @@ data class SecureItemEntity( // DATABASE
     //  They work with future backend sync
     //  They avoid ID collisions
     val title: String,
+    val titleIv: String,
     val content: String,
+    val contentIv: String,
     val type: String, // Why not 'ItemType' enum ??
     // Because ROOM is a persistence layer, not a domain layer.
     // Room:

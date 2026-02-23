@@ -6,7 +6,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.hardik.safehaven.core.navigation.AppNavGraph
 import com.hardik.safehaven.data.local.DatabaseProvider
+import com.hardik.safehaven.data.local.SafeHavenDatabase
 import com.hardik.safehaven.data.repository.SecureItemRepositoryImpl
+import com.hardik.safehaven.data.security.CryptoManager
 import com.hardik.safehaven.domain.usecase.AddItemUseCase
 import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
@@ -32,9 +34,12 @@ import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
 fun SafeHeavenApp() {
 
     val context = LocalContext.current
-    val database = remember { DatabaseProvider.getDatabase(context) }
+    val database = remember { SafeHavenDatabase.getDatabase(context)
+        /* DatabaseProvider.getDatabase(context) */
+    }
+    val cryptoManager = remember { CryptoManager() }
     // why remember ?? - so that DB is NOT recreated on recomposition
-    val repository = remember { SecureItemRepositoryImpl(database.secureItemDao()) }
+    val repository = remember { SecureItemRepositoryImpl(database.secureItemDao(), cryptoManager) }
     val addItemUseCase = remember { AddItemUseCase(repository) }
     val getItemsUseCase = remember { GetItemsUseCase(repository) }
     val getItemByIdUseCase = remember { GetItemByIdUseCase(repository) }

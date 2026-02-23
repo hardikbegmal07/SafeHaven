@@ -50,7 +50,8 @@ fun AppNavGraph(
                 viewModel = viewModel,
                 onAddClick = { navController.navigate(Screen.AddItem.route) },
                 onItemClick = { itemId ->
-                    navController.navigate(Screen.ViewItem.createRoute(itemId)) }
+                        navController.navigate(Screen.ViewItem.createRoute(itemId))
+                }
             )
         }
 

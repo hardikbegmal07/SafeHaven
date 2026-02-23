@@ -1,6 +1,7 @@
 package com.hardik.safehaven.data.mapper
 
 import com.hardik.safehaven.data.local.entity.SecureItemEntity
+import com.hardik.safehaven.data.security.CryptoManager
 import com.hardik.safehaven.domain.model.SecureItem
 import java.util.UUID
 
@@ -19,11 +20,11 @@ import java.util.UUID
 //          ↓
 //  UseCases / ViewModels / UI
 
-fun SecureItemEntity.toDomain(): SecureItem {
+fun SecureItemEntity.toDomain(cryptoManager: CryptoManager): SecureItem {
     return SecureItem(
         id = id,
-        title = title,
-        content = content,
+        title = cryptoManager.decrypt(title, titleIv),
+        content = cryptoManager.decrypt(content, contentIv),
         type = type,
         createdAt = createdAt
     )
@@ -37,18 +38,18 @@ fun SecureItemEntity.toDomain(): SecureItem {
 // This function cleans the data before passing it upward.
 
 
-fun SecureItem.toEntity(): SecureItemEntity {
-    return SecureItemEntity(
-        id = id.ifEmpty { UUID.randomUUID().toString() }, // This gives me:
-        // Create + Update with one function
-        // Offline-safe unique IDs
-        // Future backend compatibility
-        title = title,
-        content = content,
-        type = type,
-        createdAt = createdAt
-    )
-}
+//fun SecureItem.toEntity(): SecureItemEntity {
+//    return SecureItemEntity(
+//        id = id.ifEmpty { UUID.randomUUID().toString() }, // This gives me:
+//        // Create + Update with one function
+//        // Offline-safe unique IDs
+//        // Future backend compatibility
+//        title = title,
+//        content = content,
+//        type = type,
+//        createdAt = createdAt
+//    )
+//}
 // take an app object and convert it into something the database can store ...
 // it is used when saving data to Room, before calling DAO methods
 
