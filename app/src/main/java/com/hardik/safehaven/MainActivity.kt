@@ -37,6 +37,4 @@ class MainActivity : ComponentActivity() { // Component Activity - is a base cla
 // 3 Main Layers of Android Architecture are
 //  UI components -> ViewModel -> Repository -> Data Source (Room / API / files)
 
-// we are done with adding info and storing it ROOM DB
-// encrypted the DB so that even if it gets compromised no one can access anything
-// will be adding Biometric functionality to our application
+// Data is encrypted AND access is strictly controlled at runtime.
