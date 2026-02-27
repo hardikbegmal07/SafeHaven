@@ -1,5 +1,10 @@
 package com.hardik.safehaven.core.auth
 
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+
 /*
 
     Android Authentication Stack:
@@ -57,6 +62,73 @@ package com.hardik.safehaven.core.auth
         later re-sends ("replays") that exact data to the server)
 */
 
-class BiometricHelper {
+class BiometricHelper(
+    private val activity: FragmentActivity
+) { // we pass the Activity bcz BiometricPrompt requires a FragmentActivity,
+    // BiometricPrompt attaches to the activity and survives configuration changes properly.
 
+    fun canAuthenticate(): Int {
+        val biometricManager = BiometricManager.from(activity)
+
+        return biometricManager.canAuthenticate(
+            BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        )
+    }
+    // It asks android:
+    //  Does device have strong biometric ? BIOMETRIC_SUCCESS
+    //  Is it enrolled ?                    BIOMETRIC_ERROR_NO_HARDWARE
+    //  Or at least device PIN enabled ?    BIOMETRIC_ERROR_NONE_ENROLLED
+
+    fun showBiometricPrompt(
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+
+        val executor = ContextCompat.getMainExecutor(activity)
+        // Biometric callbacks must run on main thread.
+        // This ensures:
+        //  UI updates are safe
+        //  No threading crash
+
+        val biometricPrompt = BiometricPrompt(
+            activity,
+            executor,
+            object: BiometricPrompt.AuthenticationCallback() {
+
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    onSuccess() // If fingerprint or PIN succeeds -> app will be unlocked
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    onError(errString.toString())
+                    // If:
+                    //  User cancels
+                    //  Too many attempts
+                    //  Hardware failure, we call OnError(
+                }
+            }
+        ) // This creates the system authentication controller.
+        // It needs:
+        //  Activity (lifecycle owner)
+        //  Executor (main thread)
+        //  Callback (what to do after authentication)
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Unlock SafeHaven")
+            .setSubtitle("Authenticate to access secure vault")
+            .setAllowedAuthenticators(
+                BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
+            .build()
+        // This defines Title, Subtitle, Allowed authenticators
+        // This configures the system dialog.
+
+        biometricPrompt.authenticate(promptInfo)
+        // This:
+        //  Shows system dialog
+        //  Waits for fingerprint/PIN
+        //  Triggers callback
+    }
 }
