@@ -1,9 +1,13 @@
 package com.hardik.safehaven
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
+import com.hardik.safehaven.core.auth.BiometricHelper
 import com.hardik.safehaven.core.navigation.AppNavGraph
 import com.hardik.safehaven.data.local.DatabaseProvider
 import com.hardik.safehaven.data.local.SafeHavenDatabase
@@ -14,6 +18,9 @@ import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
 import com.hardik.safehaven.domain.usecase.GetItemsUseCase
 import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
+import com.hardik.safehaven.presentation.AuthViewModel
+import com.hardik.safehaven.presentation.LockScreen
+import com.hardik.safehaven.presentation.auth.AuthState
 
 /*
     Our APP is a factory.
@@ -53,14 +60,38 @@ fun SafeHeavenApp() {
     // place where all the items are stores
     // Home, Add, View all use the same data
     // remember {} -> create it once, don't recreate it on every redraw
-    AppNavGraph(
-        navController = navController,
-        addItemUseCase = addItemUseCase,
-        getItemsUseCase = getItemsUseCase,
-        getItemByIdUseCase,
-        deleteItemUseCase = deleteItemUseCase,
-        validateItemUseCase = validateItemUseCase
-    )
+
+
+    // adding BIOMETRIC AUTHENTICATION into our app
+    val authViewModel = remember { AuthViewModel() }
+    val activity = context as FragmentActivity
+    val biometricHelper = remember {
+        BiometricHelper(activity)
+    }
+    val authState by authViewModel.authState.collectAsState()
+
+    when (authState) {
+        is AuthState.Locked -> {
+            LockScreen(
+                onAuthenticated = { authViewModel.unlock() },
+                biometricHelper = biometricHelper
+            )
+        }
+
+        is AuthState.Unlocked -> {
+            AppNavGraph(
+                navController = navController,
+                addItemUseCase = addItemUseCase,
+                getItemsUseCase = getItemsUseCase,
+                getItemByIdUseCase,
+                deleteItemUseCase = deleteItemUseCase,
+                validateItemUseCase = validateItemUseCase
+            )
+        }
+    }
     // IMP : if we will create the repository inside each screen, every screen would have its own fake data,
     // and nothing would work together ...
 }
+
+// we have separated Authentication state from UI
+// viewmodel controls lock state

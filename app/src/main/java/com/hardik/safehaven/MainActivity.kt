@@ -1,9 +1,9 @@
 package com.hardik.safehaven
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.fragment.app.FragmentActivity
 import com.hardik.safehaven.core.theme.SafeHavenTheme
 
 // Week3
@@ -13,7 +13,7 @@ import com.hardik.safehaven.core.theme.SafeHavenTheme
 //  -> Room never knows about compose
 //  -> Domain models (data classes that represent core business entities) never depend on ROOM
 
-class MainActivity : ComponentActivity() { // Component Activity - is a base class that
+class MainActivity : FragmentActivity() { // Component Activity - is a base class that
     // supports lifecycle (lifecycle handling)
     // supports viewModels (viewModel stores)
     // supports Jetpack compose (saved state, compose support)
@@ -38,3 +38,16 @@ class MainActivity : ComponentActivity() { // Component Activity - is a base cla
 //  UI components -> ViewModel -> Repository -> Data Source (Room / API / files)
 
 // Data is encrypted AND access is strictly controlled at runtime.
+
+/*
+  Optimized flow for our app -
+
+  App Launch
+      ↓
+  LockScreen
+      ↓
+  Biometric Success
+      ↓
+  Home Screen
+
+*/
