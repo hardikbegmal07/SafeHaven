@@ -51,3 +51,5 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
   Home Screen
 
 */
+
+// we will be binding Biometric to Keystore ...
