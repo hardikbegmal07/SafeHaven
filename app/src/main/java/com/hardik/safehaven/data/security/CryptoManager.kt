@@ -1,5 +1,6 @@
 package com.hardik.safehaven.data.security
 
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import java.security.KeyStore
@@ -60,13 +61,23 @@ class CryptoManager {
                 ) // GCM does not need Padding.
                 .setKeySize(256)  // 256-bit AES = strong symmetric encryption.
                 .setRandomizedEncryptionRequired(true)  // ensures IV must be random
-                .build()
+                .setUserAuthenticationRequired(true) // key unusable unless biometric authentication just occurred
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                keySpec.setUserAuthenticationParameters(
+                    0,
+                    KeyProperties.AUTH_BIOMETRIC_STRONG
+                )
+            } else {
+                // For API 24–29
+                keySpec.setUserAuthenticationValidityDurationSeconds(-1)
+            }
 
             // this key can only:
             //  Encrypt and Decrypt
             // and nothing else
 
-            keyGenerator.init(keySpec)
+            keyGenerator.init(keySpec.build())
             keyGenerator.generateKey()
         }
     }
