@@ -51,3 +51,8 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
   Home Screen
 
 */
+
+// we are now going to implement:
+//  Lock after 30 seconds inactivity
+//  Lock on background
+//  Lock on process death
