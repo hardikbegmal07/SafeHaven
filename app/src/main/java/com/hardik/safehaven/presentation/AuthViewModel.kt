@@ -16,6 +16,6 @@ class AuthViewModel : ViewModel() {
     }
 
     fun lock() {
-        _authState.value = AuthState.Unlocked
+        _authState.value = AuthState.Locked
     }
 }

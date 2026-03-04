@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.hardik.safehaven.core.auth.BiometricHelper
 import com.hardik.safehaven.core.navigation.AppNavGraph
-import com.hardik.safehaven.data.local.DatabaseProvider
 import com.hardik.safehaven.data.local.SafeHavenDatabase
 import com.hardik.safehaven.data.repository.SecureItemRepositoryImpl
 import com.hardik.safehaven.data.security.CryptoManager
@@ -38,7 +37,7 @@ import com.hardik.safehaven.presentation.auth.AuthState
 
 
 @Composable
-fun SafeHeavenApp() {
+fun SafeHeavenApp(authViewModel: AuthViewModel, activity: FragmentActivity) {
 
     val context = LocalContext.current
     val database = remember { SafeHavenDatabase.getDatabase(context)
@@ -63,8 +62,8 @@ fun SafeHeavenApp() {
 
 
     // adding BIOMETRIC AUTHENTICATION into our app
-    val authViewModel = remember { AuthViewModel() }
-    val activity = context as FragmentActivity
+    //val authViewModel = remember { AuthViewModel() }
+   // val activity = LocalContext.current as? FragmentActivity
     val biometricHelper = remember {
         BiometricHelper(activity)
     }
@@ -76,6 +75,7 @@ fun SafeHeavenApp() {
                 onAuthenticated = { authViewModel.unlock() },
                 biometricHelper = biometricHelper
             )
+
         }
 
         is AuthState.Unlocked -> {

@@ -1,10 +1,25 @@
 package com.hardik.safehaven
 
 import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.hardik.safehaven.core.auth.SecurityUtils
 import com.hardik.safehaven.core.theme.SafeHavenTheme
+import com.hardik.safehaven.presentation.AuthViewModel
+import com.hardik.safehaven.presentation.auth.AuthState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import net.sqlcipher.BuildConfig
 
 // Week3
 //  Rule of this week:
@@ -17,15 +32,78 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
     // supports lifecycle (lifecycle handling)
     // supports viewModels (viewModel stores)
     // supports Jetpack compose (saved state, compose support)
+
+    private val authViewModel: AuthViewModel by viewModels()
+    private var lockJob: Job? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (SecurityUtils.isDeviceRooted()) {
+            showSecurityErrorAndExit("Rooted device detected")
+            return
+        }
+
+        // Prevent screenshots & screen recording
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+
         enableEdgeToEdge()
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                authViewModel.authState.collect { state ->
+                    if (state is AuthState.Unlocked) {
+                        startAutoLockTimer()
+                    } else {
+                        lockJob?.cancel()
+                    }
+                }
+            }
+        }
+
         setContent {
             SafeHavenTheme {
-                SafeHeavenApp()
+                SafeHeavenApp(authViewModel, activity = this)
             }
         }
     }
+
+    private fun showSecurityErrorAndExit(errorMessage: String) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun startAutoLockTimer() {
+
+//        // If already locked, do nothing
+//        if (authViewModel.authState.value is AuthState.Locked) {
+//            lockJob?.cancel()
+//            return
+//        }
+
+        lockJob?.cancel()
+
+        lockJob = lifecycleScope.launch {
+            delay(60_000)
+            //authViewModel.lock()
+
+            if (authViewModel.authState.value is AuthState.Unlocked) {
+                authViewModel.lock()
+            }
+        }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (authViewModel.authState.value is AuthState.Unlocked) {
+            startAutoLockTimer()
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        authViewModel.lock()
+    }
+
 } // Android OS needs a lifecycle owner (Activity, Fragment)
 // MainActivity extends ComponentActivity
 // ComponentActivity implements LifecycleOwner
@@ -53,6 +131,6 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 */
 
 // we are now going to implement:
-//  Lock after 30 seconds inactivity
+//  Lock after 60 seconds inactivity
 //  Lock on background
 //  Lock on process death
