@@ -100,6 +100,7 @@ Planned improvements and features:
 - **Encryption** for sensitive data at rest (AES / Encrypted storage)
 - **Android Keystore integration** for secure key management
 - **Biometric authentication** (Fingerprint / Face unlock)
+- Imporving basic security of the application
 - Secure data access flow
 - Improved UI polish and user experience
 - Unit testing for ViewModel and Domain layer
