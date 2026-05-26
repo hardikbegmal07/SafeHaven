@@ -1,5 +1,6 @@
 package com.hardik.safehaven
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -44,6 +45,18 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
             return
         }
 
+        if (SecurityUtils.isDebuggable(this)) {
+
+            AlertDialog.Builder(this)
+                .setTitle("Security Warning")
+                .setMessage(
+                    "This application is running in debug mode. " +
+                            "Security protections may be reduced."
+                )
+                .setPositiveButton("Continue", null)
+                .show()
+        }
+
         // Prevent screenshots & screen recording
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
@@ -83,7 +96,7 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
         lockJob?.cancel()
 
         lockJob = lifecycleScope.launch {
-            delay(60_000)
+            delay(300_000) // extended this auto lock to 5mins ...
             //authViewModel.lock()
 
             if (authViewModel.authState.value is AuthState.Unlocked) {

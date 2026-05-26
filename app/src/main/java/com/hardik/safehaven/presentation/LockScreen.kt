@@ -1,5 +1,6 @@
 package com.hardik.safehaven.presentation
 
+import androidx.biometric.BiometricManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,10 +18,27 @@ fun LockScreen(
     biometricHelper: BiometricHelper
 ) {
     LaunchedEffect(Unit) {
-        biometricHelper.showBiometricPrompt(
-            onSuccess = { onAuthenticated() },
-            onError = {  }
-        )
+        when (biometricHelper.canAuthenticate()) {
+
+            BiometricManager.BIOMETRIC_SUCCESS -> {
+                biometricHelper.showBiometricPrompt(
+                    onSuccess = onAuthenticated,
+                    onError = {}
+                )
+            }
+
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                // Navigate to PIN fallback
+            }
+
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                // Device unsupported
+            }
+
+            else -> {
+                // Generic fallback
+            }
+        }
     }
 
     Box(

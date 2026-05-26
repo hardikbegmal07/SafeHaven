@@ -56,28 +56,27 @@ class CryptoManager {
                 //   AES-CBC → Confidentiality only
                 //   AES-GCM → Confidentiality + Integrity
                 //  Integrity = tamper detection.
-                .setEncryptionPaddings(
-                    KeyProperties.ENCRYPTION_PADDING_NONE
-                ) // GCM does not need Padding.
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE) // GCM does not need Padding.
                 .setKeySize(256)  // 256-bit AES = strong symmetric encryption.
                 .setRandomizedEncryptionRequired(true)  // ensures IV must be random
-                .setUserAuthenticationRequired(true) // key unusable unless biometric authentication just occurred
+                //.setUserAuthenticationRequired(true) // key unusable unless biometric authentication just occurred
+                .build()
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                keySpec.setUserAuthenticationParameters(
-                    0,
-                    KeyProperties.AUTH_BIOMETRIC_STRONG
-                )
-            } else {
-                // For API 24–29
-                keySpec.setUserAuthenticationValidityDurationSeconds(-1)
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                keySpec.setUserAuthenticationParameters(
+//                    0,
+//                    KeyProperties.AUTH_BIOMETRIC_STRONG
+//                )
+//            } else {
+//                // For API 24–29
+//                keySpec.setUserAuthenticationValidityDurationSeconds(-1)
+//            }
 
             // this key can only:
             //  Encrypt and Decrypt
             // and nothing else
 
-            keyGenerator.init(keySpec.build())
+            keyGenerator.init(keySpec)
             keyGenerator.generateKey()
         }
     }
