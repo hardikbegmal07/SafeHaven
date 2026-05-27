@@ -15,9 +15,10 @@ import com.hardik.safehaven.core.auth.BiometricHelper
 @Composable
 fun LockScreen(
     onAuthenticated: () -> Unit,
-    biometricHelper: BiometricHelper
+    biometricHelper: BiometricHelper,
+    authTrigger: Int
 ) {
-    LaunchedEffect(Unit) {
+    LaunchedEffect(authTrigger) {
         when (biometricHelper.canAuthenticate()) {
 
             BiometricManager.BIOMETRIC_SUCCESS -> {

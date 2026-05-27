@@ -11,11 +11,16 @@ class AuthViewModel : ViewModel() {
 
     val authState: StateFlow<AuthState> = _authState
 
+    private val _authTrigger = MutableStateFlow(0)
+
+    val authTrigger: StateFlow<Int> = _authTrigger
+
     fun unlock() {
         _authState.value = AuthState.Unlocked
     }
 
     fun lock() {
         _authState.value = AuthState.Locked
+        _authTrigger.value++
     }
 }

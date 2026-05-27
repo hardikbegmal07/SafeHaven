@@ -68,10 +68,12 @@ fun SafeHeavenApp(authViewModel: AuthViewModel, activity: FragmentActivity) {
         BiometricHelper(activity)
     }
     val authState by authViewModel.authState.collectAsState()
+    val authTrigger by authViewModel.authTrigger.collectAsState()
 
     when (authState) {
         is AuthState.Locked -> {
             LockScreen(
+                authTrigger = authTrigger,
                 onAuthenticated = { authViewModel.unlock() },
                 biometricHelper = biometricHelper
             )

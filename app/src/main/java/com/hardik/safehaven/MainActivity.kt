@@ -29,6 +29,14 @@ import net.sqlcipher.BuildConfig
 //  -> Room never knows about compose
 //  -> Domain models (data classes that represent core business entities) never depend on ROOM
 
+// we are going to do this way :
+// App goes background
+//     ↓
+// Start grace timer
+//     ↓
+// If user returns quickly → stay unlocked
+// If timeout exceeded → lock app
+
 class MainActivity : FragmentActivity() { // Component Activity - is a base class that
     // supports lifecycle (lifecycle handling)
     // supports viewModels (viewModel stores)
@@ -36,6 +44,23 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 
     private val authViewModel: AuthViewModel by viewModels()
     private var lockJob: Job? = null
+    private var appBackgroundTime: Long = 0L
+
+    override fun onStart() {
+        super.onStart()
+
+        val currentTime = System.currentTimeMillis()
+        val timeInBackground = currentTime - appBackgroundTime
+
+        val LOCK_TIMEOUT = 30_000L // 30sec
+
+        if (timeInBackground > LOCK_TIMEOUT) {
+            lifecycleScope.launch {
+                delay(300)
+                authViewModel.lock()
+            } // lock() happens BEFORE collectors active
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +121,7 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
         lockJob?.cancel()
 
         lockJob = lifecycleScope.launch {
-            delay(300_000) // extended this auto lock to 5mins ...
+            delay(60_000) // extended this auto lock to 5mins ...
             //authViewModel.lock()
 
             if (authViewModel.authState.value is AuthState.Unlocked) {
@@ -112,9 +137,15 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
         return super.dispatchTouchEvent(ev)
     }
 
-    override fun onPause() {
-        super.onPause()
-        authViewModel.lock()
+    override fun onStop() {
+        super.onStop()
+
+        appBackgroundTime = System.currentTimeMillis()
+        // why onStop ?
+        // BECAUSE
+        //  - app fully hidden
+        //  - more stable lifecycle event
+        //  - avoids transient UI interruptions
     }
 
 } // Android OS needs a lifecycle owner (Activity, Fragment)
