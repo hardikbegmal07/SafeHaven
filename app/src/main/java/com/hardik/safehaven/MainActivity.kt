@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.hardik.safehaven.core.auth.SecurityUtils
 import com.hardik.safehaven.core.theme.SafeHavenTheme
 import com.hardik.safehaven.presentation.AuthViewModel
+import com.hardik.safehaven.presentation.LoginViewModel
 import com.hardik.safehaven.presentation.auth.AuthState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -43,6 +44,7 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
     // supports Jetpack compose (saved state, compose support)
 
     private val authViewModel: AuthViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private var lockJob: Job? = null
     private var appBackgroundTime: Long = 0L
 
@@ -101,7 +103,7 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 
         setContent {
             SafeHavenTheme {
-                SafeHeavenApp(authViewModel, activity = this)
+                SafeHeavenApp(authViewModel, loginViewModel, activity = this)
             }
         }
     }

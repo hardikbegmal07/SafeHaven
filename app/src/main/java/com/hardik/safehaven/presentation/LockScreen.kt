@@ -15,6 +15,7 @@ import com.hardik.safehaven.core.auth.BiometricHelper
 @Composable
 fun LockScreen(
     onAuthenticated: () -> Unit,
+    onAuthenticationFailed: () -> Unit,
     biometricHelper: BiometricHelper,
     authTrigger: Int
 ) {
@@ -24,20 +25,25 @@ fun LockScreen(
             BiometricManager.BIOMETRIC_SUCCESS -> {
                 biometricHelper.showBiometricPrompt(
                     onSuccess = onAuthenticated,
-                    onError = {}
+                    onError = {
+                        onAuthenticationFailed()
+                    }
                 )
             }
 
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                 // Navigate to PIN fallback
+                onAuthenticationFailed()
             }
 
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                 // Device unsupported
+                onAuthenticationFailed()
             }
 
             else -> {
                 // Generic fallback
+                onAuthenticationFailed()
             }
         }
     }

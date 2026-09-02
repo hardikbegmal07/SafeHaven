@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.hardik.safehaven.core.auth.BiometricHelper
 import com.hardik.safehaven.core.navigation.AppNavGraph
+import com.hardik.safehaven.core.navigation.Screen
 import com.hardik.safehaven.data.local.SafeHavenDatabase
 import com.hardik.safehaven.data.repository.SecureItemRepositoryImpl
 import com.hardik.safehaven.data.security.CryptoManager
@@ -19,6 +20,7 @@ import com.hardik.safehaven.domain.usecase.GetItemsUseCase
 import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
 import com.hardik.safehaven.presentation.AuthViewModel
 import com.hardik.safehaven.presentation.LockScreen
+import com.hardik.safehaven.presentation.LoginViewModel
 import com.hardik.safehaven.presentation.auth.AuthState
 
 /*
@@ -37,7 +39,7 @@ import com.hardik.safehaven.presentation.auth.AuthState
 
 
 @Composable
-fun SafeHeavenApp(authViewModel: AuthViewModel, activity: FragmentActivity) {
+fun SafeHeavenApp(authViewModel: AuthViewModel, loginViewModel: LoginViewModel, activity: FragmentActivity) {
 
     val context = LocalContext.current
     val database = remember { SafeHavenDatabase.getDatabase(context)
@@ -75,6 +77,7 @@ fun SafeHeavenApp(authViewModel: AuthViewModel, activity: FragmentActivity) {
             LockScreen(
                 authTrigger = authTrigger,
                 onAuthenticated = { authViewModel.unlock() },
+                onAuthenticationFailed = { authViewModel.requireLogin() },
                 biometricHelper = biometricHelper
             )
 
@@ -83,11 +86,26 @@ fun SafeHeavenApp(authViewModel: AuthViewModel, activity: FragmentActivity) {
         is AuthState.Unlocked -> {
             AppNavGraph(
                 navController = navController,
+                startDestination = Screen.Home.route,
                 addItemUseCase = addItemUseCase,
                 getItemsUseCase = getItemsUseCase,
                 getItemByIdUseCase,
                 deleteItemUseCase = deleteItemUseCase,
-                validateItemUseCase = validateItemUseCase
+                validateItemUseCase = validateItemUseCase,
+                loginViewModel
+            )
+        }
+
+        is AuthState.LoginRequired -> {
+            AppNavGraph(
+                navController = navController,
+                startDestination = Screen.Login.route,
+                addItemUseCase = addItemUseCase,
+                getItemsUseCase = getItemsUseCase,
+                getItemByIdUseCase = getItemByIdUseCase,
+                deleteItemUseCase = deleteItemUseCase,
+                validateItemUseCase = validateItemUseCase,
+                loginViewModel = loginViewModel
             )
         }
     }

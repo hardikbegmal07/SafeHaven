@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,6 +21,9 @@ import com.hardik.safehaven.feature_home.HomeScreen
 import com.hardik.safehaven.feature_home.HomeViewModel
 import com.hardik.safehaven.feature_view.ViewItemScreen
 import com.hardik.safehaven.feature_view.ViewItemViewModel
+import com.hardik.safehaven.presentation.LoginViewModel
+import com.hardik.safehaven.presentation.login.LoginScreen
+import com.hardik.safehaven.presentation.login.SignUpScreen
 
 // what we did -
 // I)   created screens (UI) first
@@ -29,16 +33,18 @@ import com.hardik.safehaven.feature_view.ViewItemViewModel
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
+    startDestination: String,
     addItemUseCase: AddItemUseCase,
     getItemsUseCase: GetItemsUseCase,
     getItemByIdUseCase: GetItemByIdUseCase,
     deleteItemUseCase: DeleteItemUseCase,
-    validateItemUseCase: ValidateItemUseCase
+    validateItemUseCase: ValidateItemUseCase,
+    loginViewModel: LoginViewModel
 ) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = startDestination
     ) {
 
         // HOME screen
@@ -99,6 +105,24 @@ fun AppNavGraph(
         // SETTINGS screen
         composable(Screen.Settings.route) {
             Text("Settings (Coming Soon)")
+        }
+
+        // Login Screen
+        composable(Screen.Login.route) {
+
+            LoginScreen(
+                loginViewModel,
+                {
+                    navController.navigate(Screen.SignUp.route)
+                },
+                {
+                    navController.navigate(Screen.Home.route)
+                }
+            )
+        }
+
+        composable(Screen.SignUp.route) {
+            SignUpScreen()
         }
     }
 } // describes all the screens of our app, and how we move between them

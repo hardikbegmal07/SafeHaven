@@ -101,11 +101,20 @@ class BiometricHelper(
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+
                     onError(errString.toString())
                     // If:
                     //  User cancels
                     //  Too many attempts
-                    //  Hardware failure, we call OnError(
+                    //  Hardware failure, we call OnError()
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+
+                    // Biometric did not match
+                    onError("Authentication failed")
                 }
             }
         ) // This creates the system authentication controller.
