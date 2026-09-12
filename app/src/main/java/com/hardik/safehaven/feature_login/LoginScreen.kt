@@ -1,8 +1,12 @@
-package com.hardik.safehaven.presentation.login
+package com.hardik.safehaven.feature_login
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.outlined.Visibility
@@ -27,9 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -43,7 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hardik.safehaven.R
-import com.hardik.safehaven.presentation.LoginViewModel
+import com.hardik.safehaven.feature_login.LoginViewModel
 
 @Composable
 fun LoginScreen(
@@ -51,6 +57,14 @@ fun LoginScreen(
     onSignUpBtnClicked: () -> Unit,
     onLoginSuccess: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
+    BackHandler {
+        // Clear the entire task and exit the app
+        (context as? Activity)?.finishAffinity()
+    }
+
 
     Column(
         modifier = Modifier
@@ -87,17 +101,25 @@ fun LoginScreen(
             modifier = Modifier.padding(horizontal = 28.dp)
         )
 
-        Text(
-            "Forgot Password?",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.End,
-            color = Color(0xFF0E207E),
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp, end = 30.dp)
-                .clickable(onClick = { /* TODO */ })
-        )
+                .padding(top = 20.dp, end = 30.dp),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Text(
+                "Forgot Password?",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.End,
+                color = Color(0xFF0E207E),
+                modifier = Modifier
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { /* TODO */ })
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -110,9 +132,11 @@ fun LoginScreen(
 
 }
 
-@Preview
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(
+    loginViewModel: LoginViewModel,
+    onLoginUpBtnClicked: () -> Unit,
+) {
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -166,9 +190,9 @@ fun SignUpScreen() {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        SubHeaderTextView("Login", {})
+        SubHeaderTextView("Login", onLoginUpBtnClicked)
 
-        CommonButton("Continue", {})
+        CommonButton("Continue", { /* TODO */ })
     }
 
 }
@@ -194,7 +218,7 @@ fun CustomTextField(
             color = Color(0xFF0E207E),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp, start = 2.dp)
+                .padding(top = 8.dp, start = 2.dp)
         )
 
         TextField(
@@ -203,7 +227,7 @@ fun CustomTextField(
 
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 5.dp)
+                .padding(vertical = 2.dp)
                 .border(
                     width = 1.dp,
                     color = Color(0xFF0E207E),
@@ -211,6 +235,8 @@ fun CustomTextField(
                 ),
 
             singleLine = true,
+
+            shape = RoundedCornerShape(5.dp),
 
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
@@ -280,17 +306,25 @@ fun CommonButton(title: String, onClick: () -> Unit) {
 
 @Composable
 fun SubHeaderTextView(title: String, onClick: () -> Unit) {
-    Text(
-        title,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        color = Color(0xFF0E207E),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .clickable(onClick = onClick)
-    )
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = Color(0xFF0E207E),
+            modifier = Modifier
+                .padding(20.dp)
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = onClick
+                )
+        )
+    }
 }
 
 @Composable
@@ -303,7 +337,7 @@ fun HeaderTextView(title: String) {
         color = Color(0xFF0E207E),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 40.dp)
+            .padding(top = 26.dp)
     )
 }
 
