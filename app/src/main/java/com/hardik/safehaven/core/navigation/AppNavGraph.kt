@@ -3,8 +3,6 @@ package com.hardik.safehaven.core.navigation
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,9 +19,9 @@ import com.hardik.safehaven.feature_home.HomeScreen
 import com.hardik.safehaven.feature_home.HomeViewModel
 import com.hardik.safehaven.feature_view.ViewItemScreen
 import com.hardik.safehaven.feature_view.ViewItemViewModel
-import com.hardik.safehaven.presentation.LoginViewModel
-import com.hardik.safehaven.presentation.login.LoginScreen
-import com.hardik.safehaven.presentation.login.SignUpScreen
+import com.hardik.safehaven.feature_login.LoginViewModel
+import com.hardik.safehaven.feature_login.LoginScreen
+import com.hardik.safehaven.feature_login.SignUpScreen
 
 // what we did -
 // I)   created screens (UI) first
@@ -116,13 +114,22 @@ fun AppNavGraph(
                     navController.navigate(Screen.SignUp.route)
                 },
                 {
-                    navController.navigate(Screen.Home.route)
+                    navController.navigate(Screen.Home.route) {
+//                        popUpTo(Screen.Login.route) {
+//                            inclusive = true
+//                        }
+//
+//                        launchSingleTop = true
+                    }
                 }
             )
         }
 
         composable(Screen.SignUp.route) {
-            SignUpScreen()
+            SignUpScreen(loginViewModel,
+                {
+                    navController.navigate(Screen.Login.route)
+                })
         }
     }
 } // describes all the screens of our app, and how we move between them

@@ -18,10 +18,10 @@ import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
 import com.hardik.safehaven.domain.usecase.GetItemsUseCase
 import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
-import com.hardik.safehaven.presentation.AuthViewModel
-import com.hardik.safehaven.presentation.LockScreen
-import com.hardik.safehaven.presentation.LoginViewModel
-import com.hardik.safehaven.presentation.auth.AuthState
+import com.hardik.safehaven.feature_auth.AuthViewModel
+import com.hardik.safehaven.feature_auth.LockScreen
+import com.hardik.safehaven.feature_login.LoginViewModel
+import com.hardik.safehaven.feature_auth.auth.AuthState
 
 /*
     Our APP is a factory.

@@ -1,4 +1,4 @@
-package com.hardik.safehaven.presentation.auth
+package com.hardik.safehaven.feature_auth.auth
 
 sealed class AuthState {
     data object Locked: AuthState() // App is waiting for biometric

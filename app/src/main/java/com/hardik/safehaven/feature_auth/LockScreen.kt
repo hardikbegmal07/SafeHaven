@@ -1,4 +1,4 @@
-package com.hardik.safehaven.presentation
+package com.hardik.safehaven.feature_auth
 
 import androidx.biometric.BiometricManager
 import androidx.compose.foundation.background
