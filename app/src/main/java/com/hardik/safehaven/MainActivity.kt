@@ -2,7 +2,6 @@ package com.hardik.safehaven
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.Toast
@@ -14,14 +13,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.hardik.safehaven.core.auth.SecurityUtils
+import com.hardik.safehaven.core.auth.SessionManager
 import com.hardik.safehaven.core.theme.SafeHavenTheme
-import com.hardik.safehaven.presentation.AuthViewModel
-import com.hardik.safehaven.presentation.LoginViewModel
-import com.hardik.safehaven.presentation.auth.AuthState
+import com.hardik.safehaven.feature_auth.AuthViewModel
+import com.hardik.safehaven.feature_login.LoginViewModel
+import com.hardik.safehaven.feature_auth.auth.AuthState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import net.sqlcipher.BuildConfig
 
 // Week3
 //  Rule of this week:
@@ -45,27 +44,37 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 
     private val authViewModel: AuthViewModel by viewModels()
     private val loginViewModel: LoginViewModel by viewModels()
+
+    private lateinit var sessionManager: SessionManager
+
     private var lockJob: Job? = null
-    private var appBackgroundTime: Long = 0L
+    private var appBackgroundTime: Long? = null
 
     override fun onStart() {
         super.onStart()
 
-        val currentTime = System.currentTimeMillis()
-        val timeInBackground = currentTime - appBackgroundTime
+        val backgroundTime = appBackgroundTime ?: return
 
-        val LOCK_TIMEOUT = 30_000L // 30sec
+        val currentTime = System.currentTimeMillis()
+        val timeInBackground = currentTime - backgroundTime
+
+        val LOCK_TIMEOUT = 90_000L // 90 sec
 
         if (timeInBackground > LOCK_TIMEOUT) {
             lifecycleScope.launch {
                 delay(300)
                 authViewModel.lock()
             } // lock() happens BEFORE collectors active
+//            authViewModel.requireLogin()
         }
+
+        appBackgroundTime = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sessionManager = SessionManager(this@MainActivity)
 
         if (SecurityUtils.isDeviceRooted()) {
             showSecurityErrorAndExit("Rooted device detected")
@@ -101,9 +110,16 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
             }
         }
 
+        if (sessionManager.isSessionValid()) {
+            authViewModel.unlock()
+        } else {
+            // authViewModel.requireLogin()
+            authViewModel.lock()
+        }
+
         setContent {
             SafeHavenTheme {
-                SafeHeavenApp(authViewModel, loginViewModel, activity = this)
+                SafeHeavenApp(authViewModel, loginViewModel, activity = this, sessionManager)
             }
         }
     }
