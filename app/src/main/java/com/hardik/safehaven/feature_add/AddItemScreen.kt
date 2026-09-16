@@ -1,10 +1,15 @@
 package com.hardik.safehaven.feature_add
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,15 +20,21 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hardik.safehaven.domain.model.ItemType
+import com.hardik.safehaven.feature_login.CommonButton
+import com.hardik.safehaven.feature_login.CustomTextField
+import com.hardik.safehaven.feature_login.HeaderTextView
 
 @Composable
 fun AddItemScreen(
@@ -32,19 +43,30 @@ fun AddItemScreen(
 ) {
     val error by viewModel.error.collectAsStateWithLifecycle()
 
-    Column(modifier = Modifier.fillMaxSize().padding(30.dp)) {
-        TextField(
-            value = viewModel.title,
-            onValueChange = { viewModel.title = it },
-            label = { Text("Title") }
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 35.dp, bottom = 20.dp)
+    ) {
+
+        HeaderTextView("Add a Doc")
 
         Spacer(Modifier.height(8.dp))
 
-        TextField(
-            value = viewModel.content,
-            onValueChange = { viewModel.content = it },
-            label = { Text("Content") }
+        CustomTextField(
+            "Title",
+            viewModel.title,
+            { viewModel.title = it },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            modifier = Modifier.padding(horizontal = 28.dp)
+        )
+
+        CustomTextField(
+            "Content",
+            viewModel.content,
+            { viewModel.content = it },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            modifier = Modifier.padding(horizontal = 28.dp)
         )
 
         Spacer(Modifier.height(8.dp))
@@ -54,14 +76,12 @@ fun AddItemScreen(
             onSelected = { viewModel.type = it }
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
-        Button(onClick = {
+        CommonButton("Save") {
             viewModel.saveItem {
                 onSave()
             }
-        }) {
-            Text("Save")
         }
     }
 }
@@ -74,49 +94,63 @@ fun ItemTypeDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-//    Box {
-//        Button(onClick = { expanded = true }) {
-//            Text(selected)
-//        }
-//
-//        DropdownMenu(
-//            expanded = expanded,
-//            onDismissRequest = { expanded = false }
-//        ) {
-//            ItemType.entries.forEach {
-//                DropdownMenuItem(
-//                    text = { Text(it.name) },
-//                    onClick = {
-//                        onSelected(it.name)
-//                        expanded = false
-//                    }
-//                )
-//            }
-//        }
-//    }
+    val fieldShape = RoundedCornerShape(5.dp)
+    val primaryColor = Color(0xFF0E207E)
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier
+            .background(Color.Transparent)
+            .padding(top = 10.dp)
+            .padding(horizontal = 28.dp)
     ) {
         TextField(
             value = selected.name,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Item Type") },
+            label = { Text("Item Type", color = primaryColor) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
             },
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor()
+                .height(60.dp)
+                .border(
+                    width = 1.dp,
+                    color = primaryColor,
+                    shape = fieldShape
+                ),
+            shape = fieldShape,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+
+                focusedTextColor = primaryColor,
+                unfocusedTextColor = primaryColor,
+
+                focusedLabelColor = primaryColor,
+                unfocusedLabelColor = primaryColor,
+
+                focusedTrailingIconColor = primaryColor,
+                unfocusedTrailingIconColor = primaryColor,
+
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            )
         )
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color.White)
         ) {
             ItemType.entries.forEach { type ->
                 DropdownMenuItem(
-                    text = { Text(type.name) },
+                    text = { Text(type.name, color = primaryColor) },
                     onClick = {
                         onSelected(type)
                         expanded = false

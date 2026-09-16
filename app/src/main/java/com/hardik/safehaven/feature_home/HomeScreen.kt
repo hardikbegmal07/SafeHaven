@@ -1,5 +1,8 @@
 package com.hardik.safehaven.feature_home
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hardik.safehaven.core.ui.state.UiState
 
@@ -31,15 +36,28 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle() // subscribe to state changes and Keep UI in sync.
 
+    val activity = LocalContext.current as? Activity
+
+    BackHandler {
+        activity?.finishAffinity()
+    }
+
+
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick) {
+            FloatingActionButton(
+                onClick = onAddClick,
+                containerColor = Color(0xFF0E207E),
+                contentColor = Color.White
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
             contentAlignment = Alignment.Center
         ) {
             when (val state = uiState.state) {
@@ -90,7 +108,6 @@ fun HomeScreen(
 //    } // LaunchedEffect tell that run this once when the screen enters composition
     // composables can recompose multiple times
     // you do not want to call loadItems(), every recompose
-
 
 
 //    Column {
