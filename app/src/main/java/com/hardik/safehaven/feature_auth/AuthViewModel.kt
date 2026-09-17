@@ -1,7 +1,7 @@
-package com.hardik.safehaven.presentation
+package com.hardik.safehaven.feature_auth
 
 import androidx.lifecycle.ViewModel
-import com.hardik.safehaven.presentation.auth.AuthState
+import com.hardik.safehaven.feature_auth.auth.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

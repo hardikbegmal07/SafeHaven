@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.hardik.safehaven.core.auth.SessionManager
 import com.hardik.safehaven.domain.usecase.AddItemUseCase
 import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
@@ -37,7 +38,8 @@ fun AppNavGraph(
     getItemByIdUseCase: GetItemByIdUseCase,
     deleteItemUseCase: DeleteItemUseCase,
     validateItemUseCase: ValidateItemUseCase,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    sessionManager: SessionManager
 ) {
 
     NavHost(
@@ -114,6 +116,10 @@ fun AppNavGraph(
                     navController.navigate(Screen.SignUp.route)
                 },
                 {
+                    val expiryTime = System.currentTimeMillis() + 1 * 60 * 1000L // 1 mins
+
+                    sessionManager.saveLogin(expiryTime)
+
                     navController.navigate(Screen.Home.route) {
 //                        popUpTo(Screen.Login.route) {
 //                            inclusive = true

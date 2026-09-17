@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.hardik.safehaven.core.auth.BiometricHelper
+import com.hardik.safehaven.core.auth.SessionManager
 import com.hardik.safehaven.core.navigation.AppNavGraph
 import com.hardik.safehaven.core.navigation.Screen
 import com.hardik.safehaven.data.local.SafeHavenDatabase
@@ -39,7 +40,12 @@ import com.hardik.safehaven.feature_auth.auth.AuthState
 
 
 @Composable
-fun SafeHeavenApp(authViewModel: AuthViewModel, loginViewModel: LoginViewModel, activity: FragmentActivity) {
+fun SafeHeavenApp(
+    authViewModel: AuthViewModel,
+    loginViewModel: LoginViewModel,
+    activity: FragmentActivity,
+    sessionManager: SessionManager
+) {
 
     val context = LocalContext.current
     val database = remember { SafeHavenDatabase.getDatabase(context)
@@ -92,7 +98,8 @@ fun SafeHeavenApp(authViewModel: AuthViewModel, loginViewModel: LoginViewModel, 
                 getItemByIdUseCase,
                 deleteItemUseCase = deleteItemUseCase,
                 validateItemUseCase = validateItemUseCase,
-                loginViewModel
+                loginViewModel,
+                sessionManager
             )
         }
 
@@ -105,7 +112,8 @@ fun SafeHeavenApp(authViewModel: AuthViewModel, loginViewModel: LoginViewModel, 
                 getItemByIdUseCase = getItemByIdUseCase,
                 deleteItemUseCase = deleteItemUseCase,
                 validateItemUseCase = validateItemUseCase,
-                loginViewModel = loginViewModel
+                loginViewModel = loginViewModel,
+                sessionManager
             )
         }
     }

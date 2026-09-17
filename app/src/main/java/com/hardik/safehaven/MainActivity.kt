@@ -53,22 +53,22 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
     override fun onStart() {
         super.onStart()
 
-        val backgroundTime = appBackgroundTime ?: return
-
-        val currentTime = System.currentTimeMillis()
-        val timeInBackground = currentTime - backgroundTime
-
-        val LOCK_TIMEOUT = 90_000L // 90 sec
-
-        if (timeInBackground > LOCK_TIMEOUT) {
-            lifecycleScope.launch {
-                delay(300)
-                authViewModel.lock()
-            } // lock() happens BEFORE collectors active
-//            authViewModel.requireLogin()
-        }
-
-        appBackgroundTime = null
+//        val backgroundTime = appBackgroundTime ?: return
+//
+//        val currentTime = System.currentTimeMillis()
+//        val timeInBackground = currentTime - backgroundTime
+//
+//        val LOCK_TIMEOUT = 90_000L // 90 sec
+//
+//        if (timeInBackground > LOCK_TIMEOUT) {
+//            lifecycleScope.launch {
+//                delay(300)
+//                authViewModel.lock()
+//            } // lock() happens BEFORE collectors active
+////            authViewModel.requireLogin()
+//        }
+//
+//        appBackgroundTime = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,46 +76,46 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 
         sessionManager = SessionManager(this@MainActivity)
 
-        if (SecurityUtils.isDeviceRooted()) {
-            showSecurityErrorAndExit("Rooted device detected")
-            return
-        }
-
-        if (SecurityUtils.isDebuggable(this)) {
-
-            AlertDialog.Builder(this)
-                .setTitle("Security Warning")
-                .setMessage(
-                    "This application is running in debug mode. " +
-                            "Security protections may be reduced."
-                )
-                .setPositiveButton("Continue", null)
-                .show()
-        }
+//        if (SecurityUtils.isDeviceRooted()) {
+//            showSecurityErrorAndExit("Rooted device detected")
+//            return
+//        }
+//
+//        if (SecurityUtils.isDebuggable(this)) {
+//
+//            AlertDialog.Builder(this)
+//                .setTitle("Security Warning")
+//                .setMessage(
+//                    "This application is running in debug mode. " +
+//                            "Security protections may be reduced."
+//                )
+//                .setPositiveButton("Continue", null)
+//                .show()
+//        }
 
         // Prevent screenshots & screen recording
-        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        // window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
         enableEdgeToEdge()
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                authViewModel.authState.collect { state ->
-                    if (state is AuthState.Unlocked) {
-                        startAutoLockTimer()
-                    } else {
-                        lockJob?.cancel()
-                    }
-                }
-            }
-        }
+//        lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                authViewModel.authState.collect { state ->
+//                    if (state is AuthState.Unlocked) {
+//                        startAutoLockTimer()
+//                    } else {
+//                        lockJob?.cancel()
+//                    }
+//                }
+//            }
+//        }
 
-        if (sessionManager.isSessionValid()) {
-            authViewModel.unlock()
-        } else {
-            // authViewModel.requireLogin()
-            authViewModel.lock()
-        }
+//        if (sessionManager.isSessionValid()) {
+//            authViewModel.unlock()
+//        } else {
+//            // authViewModel.requireLogin()
+//            authViewModel.lock()
+//        }
 
         setContent {
             SafeHavenTheme {
@@ -136,29 +136,29 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 //            return
 //        }
 
-        lockJob?.cancel()
-
-        lockJob = lifecycleScope.launch {
-            delay(60_000) // extended this auto lock to 5mins ...
-            //authViewModel.lock()
-
-            if (authViewModel.authState.value is AuthState.Unlocked) {
-                authViewModel.lock()
-            }
-        }
+//        lockJob?.cancel()
+//
+//        lockJob = lifecycleScope.launch {
+//            delay(60_000) // extended this auto lock to 5mins ...
+//            //authViewModel.lock()
+//
+//            if (authViewModel.authState.value is AuthState.Unlocked) {
+//                authViewModel.lock()
+//            }
+//        }
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        if (authViewModel.authState.value is AuthState.Unlocked) {
-            startAutoLockTimer()
-        }
-        return super.dispatchTouchEvent(ev)
-    }
+//    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+//        if (authViewModel.authState.value is AuthState.Unlocked) {
+//            startAutoLockTimer()
+//        }
+//        return super.dispatchTouchEvent(ev)
+//    }
 
     override fun onStop() {
         super.onStop()
 
-        appBackgroundTime = System.currentTimeMillis()
+        // appBackgroundTime = System.currentTimeMillis()
         // why onStop ?
         // BECAUSE
         //  - app fully hidden
