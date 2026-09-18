@@ -76,25 +76,25 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 
         sessionManager = SessionManager(this@MainActivity)
 
-//        if (SecurityUtils.isDeviceRooted()) {
-//            showSecurityErrorAndExit("Rooted device detected")
-//            return
-//        }
-//
-//        if (SecurityUtils.isDebuggable(this)) {
-//
-//            AlertDialog.Builder(this)
-//                .setTitle("Security Warning")
-//                .setMessage(
-//                    "This application is running in debug mode. " +
-//                            "Security protections may be reduced."
-//                )
-//                .setPositiveButton("Continue", null)
-//                .show()
-//        }
+        if (SecurityUtils.isDeviceRooted()) {
+            showSecurityErrorAndExit("Rooted device detected")
+            return
+        }
 
-        // Prevent screenshots & screen recording
-        // window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        if (SecurityUtils.isDebuggable(this)) {
+
+            AlertDialog.Builder(this)
+                .setTitle("Security Warning")
+                .setMessage(
+                    "This application is running in debug mode. " +
+                            "Security protections may be reduced."
+                )
+                .setPositiveButton("Continue", null)
+                .show()
+        }
+
+         // Prevent screenshots & screen recording
+         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
         enableEdgeToEdge()
 
