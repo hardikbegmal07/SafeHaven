@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,16 +17,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.CloudUpload
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -41,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +54,8 @@ fun AddItemScreen(
     onSave: () -> Unit
 ) {
     val error by viewModel.error.collectAsStateWithLifecycle()
+
+    var showUploadModal by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -97,7 +97,7 @@ fun AddItemScreen(
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
-                    onClick = { /* TODO */ }
+                    onClick = { showUploadModal = true }
                 ),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
@@ -126,6 +126,24 @@ fun AddItemScreen(
                 onSave()
             }
         }
+    }
+
+    if (showUploadModal) {
+        UploadDocumentModal(
+            onDismiss = {
+                showUploadModal = false
+            },
+            onCameraClick = {
+                showUploadModal = false
+
+                // TODO: Open camera
+            },
+            onGalleryClick = {
+                showUploadModal = false
+
+                // TODO: Open gallery
+            }
+        )
     }
 }
 
@@ -198,6 +216,114 @@ fun ItemTypeDropdown(
                         onSelected(type)
                         expanded = false
                     }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UploadDocumentModal(
+    onDismiss: () -> Unit,
+    onCameraClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+) {
+    val primaryColor = Color(0xFF0E207E)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = Color.White,
+        shape = RoundedCornerShape(
+            topStart = 28.dp,
+            topEnd = 28.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        ),
+        dragHandle = {
+            BottomSheetDefaults.DragHandle(
+                color = primaryColor.copy(alpha = 0.35f)
+            )
+        }
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 28.dp,
+                    end = 28.dp,
+                    bottom = 30.dp
+                )
+        ) {
+
+            Text(
+                text = "Add Document",
+                color = primaryColor,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            // Use Camera
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember {
+                            MutableInteractionSource()
+                        },
+                        onClick = onCameraClick
+                    )
+                    .padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.CameraAlt,
+                    contentDescription = "Use Camera",
+                    tint = primaryColor,
+                    modifier = Modifier.size(25.dp)
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = "Use Camera",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = primaryColor
+                )
+            }
+
+            // Gallery
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember {
+                            MutableInteractionSource()
+                        },
+                        onClick = onGalleryClick
+                    )
+                    .padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.PhotoLibrary,
+                    contentDescription = "Choose from Gallery",
+                    tint = primaryColor,
+                    modifier = Modifier.size(25.dp)
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = "Choose from Gallery",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = primaryColor
                 )
             }
         }
