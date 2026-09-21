@@ -17,16 +17,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.CloudUpload
-import androidx.compose.material.icons.outlined.PhotoLibrary
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -54,6 +50,7 @@ fun AddItemScreen(
     onSave: () -> Unit
 ) {
     val error by viewModel.error.collectAsStateWithLifecycle()
+    // we need to show this on ui, if the error is received and currently we are not doing anything over here ... ???????????????
 
     var showUploadModal by remember { mutableStateOf(false) }
 
@@ -216,114 +213,6 @@ fun ItemTypeDropdown(
                         onSelected(type)
                         expanded = false
                     }
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun UploadDocumentModal(
-    onDismiss: () -> Unit,
-    onCameraClick: () -> Unit,
-    onGalleryClick: () -> Unit,
-) {
-    val primaryColor = Color(0xFF0E207E)
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = Color.White,
-        shape = RoundedCornerShape(
-            topStart = 28.dp,
-            topEnd = 28.dp,
-            bottomStart = 0.dp,
-            bottomEnd = 0.dp
-        ),
-        dragHandle = {
-            BottomSheetDefaults.DragHandle(
-                color = primaryColor.copy(alpha = 0.35f)
-            )
-        }
-    ) {
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 28.dp,
-                    end = 28.dp,
-                    bottom = 30.dp
-                )
-        ) {
-
-            Text(
-                text = "Add Document",
-                color = primaryColor,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            // Use Camera
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember {
-                            MutableInteractionSource()
-                        },
-                        onClick = onCameraClick
-                    )
-                    .padding(vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.CameraAlt,
-                    contentDescription = "Use Camera",
-                    tint = primaryColor,
-                    modifier = Modifier.size(25.dp)
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Text(
-                    text = "Use Camera",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = primaryColor
-                )
-            }
-
-            // Gallery
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember {
-                            MutableInteractionSource()
-                        },
-                        onClick = onGalleryClick
-                    )
-                    .padding(vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.PhotoLibrary,
-                    contentDescription = "Choose from Gallery",
-                    tint = primaryColor,
-                    modifier = Modifier.size(25.dp)
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Text(
-                    text = "Choose from Gallery",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = primaryColor
                 )
             }
         }
