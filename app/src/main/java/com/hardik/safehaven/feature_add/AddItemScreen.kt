@@ -1,5 +1,11 @@
 package com.hardik.safehaven.feature_add
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,12 +39,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.hardik.safehaven.domain.model.ItemType
 import com.hardik.safehaven.feature_login.CommonButton
 import com.hardik.safehaven.feature_login.CustomTextField
@@ -49,10 +60,77 @@ fun AddItemScreen(
     viewModel: AddItemViewModel,
     onSave: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
     val error by viewModel.error.collectAsStateWithLifecycle()
     // we need to show this on ui, if the error is received and currently we are not doing anything over here ... ???????????????
 
     var showUploadModal by remember { mutableStateOf(false) }
+
+    val selectedImageUri by viewModel.selectedImageUri.collectAsStateWithLifecycle()
+
+    val cameraImageUri by viewModel.cameraImageUri.collectAsStateWithLifecycle()
+
+    /** GALLERY / PHOTO Picker */
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+
+        if (uri != null)
+            viewModel.imageSelected(uri)
+    }
+
+    /** CAMERA */
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success)
+            viewModel.imageSelected(cameraImageUri)
+        else
+            viewModel.cameraImageSelected(null)
+    }
+
+    /** Camera Permission */
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+
+        if (granted) {
+
+            val uri = createImageUri(context)
+
+            viewModel.cameraImageSelected(uri)
+
+            cameraLauncher.launch(uri)
+
+        }
+    }
+
+    /** Open Camera */
+    fun openCamera() {
+
+        val permissionGranted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (permissionGranted) {
+
+            val uri = createImageUri(context)
+
+            viewModel.cameraImageSelected(uri)
+
+            cameraLauncher.launch(uri)
+        } else {
+
+          cameraPermissionLauncher.launch(
+              Manifest.permission.CAMERA
+          )
+
+        }
+
+    }
 
     Column(
         modifier = Modifier
@@ -87,6 +165,27 @@ fun AddItemScreen(
             onSelected = { viewModel.type = it }
         )
 
+        /** Selected Image Preview */
+        selectedImageUri?.let { uri ->
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            AsyncImage(
+                model = uri,
+                contentDescription = "Selected document",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 28.dp)
+                    .height(180.dp)
+                    .clip(
+                        RoundedCornerShape(12.dp)
+                    ),
+                contentScale = ContentScale.Crop
+            )
+
+        }
+
+        /** Upload Document */
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,6 +217,18 @@ fun AddItemScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        error?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(
+                    horizontal = 28.dp,
+                    vertical = 4.dp
+                )
+            )
+        }
+
         CommonButton("Save") {
             viewModel.saveItem {
                 onSave()
@@ -133,12 +244,18 @@ fun AddItemScreen(
             onCameraClick = {
                 showUploadModal = false
 
-                // TODO: Open camera
+                openCamera()
             },
             onGalleryClick = {
                 showUploadModal = false
 
-                // TODO: Open gallery
+                galleryLauncher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts
+                            .PickVisualMedia
+                            .ImageOnly
+                    )
+                )
             }
         )
     }
