@@ -27,12 +27,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/*
+    For Gallery, we will use Android's Phone Picker, it avoids gallery / storage permission,
+    PickVisualMedia also has backward-compatible behavior through the Activity library.
+
+    For Camera, we will use ActivityResultContracts.TakePicture() and give the camera a uri where it
+    can save the full-resolution image.
+
+    **One important point: we will keep the selected uri in the screen for now.
+    Later, when we connect this to DB, we will copy / encrypt the image and persist it rather than
+    storing the external Uri directly.
+*/
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UploadDocumentModal(
     onDismiss: () -> Unit,
     onCameraClick: () -> Unit,
-    onGalleryClick: () -> Unit,
+    onGalleryClick: () -> Unit
 ) {
     val primaryColor = Color(0xFF0E207E)
 
