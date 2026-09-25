@@ -50,10 +50,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.hardik.safehaven.data.security.toByteArray
 import com.hardik.safehaven.domain.model.ItemType
 import com.hardik.safehaven.feature_login.CommonButton
 import com.hardik.safehaven.feature_login.CustomTextField
 import com.hardik.safehaven.feature_login.HeaderTextView
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun AddItemScreen(
@@ -64,31 +66,56 @@ fun AddItemScreen(
     val context = LocalContext.current
 
     val error by viewModel.error.collectAsStateWithLifecycle()
-    // we need to show this on ui, if the error is received and currently we are not doing anything over here ... ???????????????
 
     var showUploadModal by remember { mutableStateOf(false) }
 
-    val selectedImageUri by viewModel.selectedImageUri.collectAsStateWithLifecycle()
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    val cameraImageUri by viewModel.cameraImageUri.collectAsStateWithLifecycle()
+    var previewUri by remember { mutableStateOf<Uri?>(null) }
 
     /** GALLERY / PHOTO Picker */
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
 
-        if (uri != null)
-            viewModel.imageSelected(uri)
+        if (uri != null) {
+
+            previewUri = uri
+
+            val imageBytes = uri.toByteArray(context)
+
+            val mimeType = context.contentResolver.getType(uri)
+
+            viewModel.imageSelected(
+                imageBytes = imageBytes,
+                mimeType = mimeType
+            )
+        }
     }
 
     /** CAMERA */
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success)
-            viewModel.imageSelected(cameraImageUri)
+        if (success) {
+            // viewModel.imageSelected(cameraImageUri)
+
+            cameraImageUri?.let { uri ->
+
+                previewUri = uri
+
+                val imageBytes = uri.toByteArray(context)
+
+                val mimeType = context.contentResolver.getType(uri)
+
+                viewModel.imageSelected(
+                    imageBytes = imageBytes,
+                    mimeType = mimeType
+                )
+            }
+        }
         else
-            viewModel.cameraImageSelected(null)
+            cameraImageUri = null
     }
 
     /** Camera Permission */
@@ -100,7 +127,7 @@ fun AddItemScreen(
 
             val uri = createImageUri(context)
 
-            viewModel.cameraImageSelected(uri)
+            cameraImageUri = uri
 
             cameraLauncher.launch(uri)
 
@@ -119,7 +146,7 @@ fun AddItemScreen(
 
             val uri = createImageUri(context)
 
-            viewModel.cameraImageSelected(uri)
+            cameraImageUri = uri
 
             cameraLauncher.launch(uri)
         } else {
@@ -166,7 +193,7 @@ fun AddItemScreen(
         )
 
         /** Selected Image Preview */
-        selectedImageUri?.let { uri ->
+        previewUri?.let { uri ->
 
             Spacer(modifier = Modifier.height(8.dp))
 

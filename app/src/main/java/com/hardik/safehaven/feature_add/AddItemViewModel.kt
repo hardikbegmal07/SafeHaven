@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hardik.safehaven.data.security.toByteArray
 import com.hardik.safehaven.domain.model.ItemType
 import com.hardik.safehaven.domain.model.SecureItem
 import com.hardik.safehaven.domain.usecase.AddItemUseCase
@@ -28,20 +29,16 @@ class AddItemViewModel(
     var content by mutableStateOf("")
     var type by mutableStateOf(ItemType.NOTE)
 
-    private val _selectedImageUri = MutableStateFlow<Uri?>(null)
-    val selectedImageUri = _selectedImageUri.asStateFlow()
+    private var imageData: ByteArray? = null
+    private var mimeType: String? = null
 
-    fun imageSelected(uri: Uri?) {
-        _selectedImageUri.value = uri
+    fun imageSelected(
+        imageBytes: ByteArray?,
+        mimeType: String?
+    ) {
+        imageData = imageBytes
+        this.mimeType = mimeType
     }
-
-    private val _cameraImageUri = MutableStateFlow<Uri?>(null)
-    val cameraImageUri = _cameraImageUri.asStateFlow()
-
-    fun cameraImageSelected(uri: Uri?) {
-        _cameraImageUri.value = uri
-    }
-
 
     private val _error = MutableStateFlow<String?>(null)
     val error : StateFlow<String?> = _error
@@ -54,15 +51,19 @@ class AddItemViewModel(
 
             ValidationResult.Success -> {
                 viewModelScope.launch {
-                    addItemUseCase(
-                        SecureItem(
-                            id = UUID.randomUUID().toString(),
-                            title = title,
-                            content = content,
-                            type = type.name,
-                            createdAt = System.currentTimeMillis()
-                        )
+
+                    val item = SecureItem(
+                        id = UUID.randomUUID().toString(),
+                        title = title,
+                        content = content,
+                        type = type.name,
+                        createdAt = System.currentTimeMillis(),
+                        imageData = imageData,
+                        mimeType = mimeType
                     )
+
+                    addItemUseCase(item)
+
                     onSuccess() // navigate after saving
                 }
             }

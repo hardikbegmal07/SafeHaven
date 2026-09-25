@@ -21,12 +21,28 @@ import java.util.UUID
 //  UseCases / ViewModels / UI
 
 fun SecureItemEntity.toDomain(cryptoManager: CryptoManager): SecureItem {
+
+    val decryptedImage =
+        if (imageData != null && imageIv != null) {
+
+            cryptoManager.decryptBytes(
+                imageData,
+                iv = imageIv
+            )
+
+        } else {
+            null
+        }
+
+
     return SecureItem(
         id = id,
         title = cryptoManager.decrypt(title, titleIv),
         content = cryptoManager.decrypt(content, contentIv),
         type = type,
-        createdAt = createdAt
+        createdAt = createdAt,
+        imageData = decryptedImage,
+        mimeType = mimeType
     )
 }
 // here we are converting a database ROW into an app/business object, we can use

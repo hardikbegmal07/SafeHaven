@@ -159,6 +159,48 @@ class CryptoManager {
     //  initialize cipher with key + IV
     //  decrypt
 
+    fun encryptBytes(data: ByteArray): EncryptedBytes {
+
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+
+        cipher.init(
+            Cipher.ENCRYPT_MODE,
+            getSecretKey()
+        ) // means Prepare AES-GCM encryption using our Android Keystore key
+
+        val iv = cipher.iv
+        // Key = secret
+        // IV  = unique value for this encryption (it isn't the secret)
+
+        val encryptedBytes = cipher.doFinal(data) // actual encryption
+
+        return EncryptedBytes(
+            cipherText = encryptedBytes,
+            iv = iv
+        )
+    }
+
+    fun decryptBytes(
+        cipherText: ByteArray,
+        iv: ByteArray
+    ): ByteArray {
+
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+
+        val spec = GCMParameterSpec(
+            128,
+            iv
+        )
+
+        cipher.init(
+            Cipher.DECRYPT_MODE,
+            getSecretKey(),
+            spec
+        )
+
+        return cipher.doFinal(cipherText)
+    }
+
     fun encryptSafe(plainText: String): CryptoResult<EncryptedData> {
         return try {
             CryptoResult.Success(encrypt(plainText))

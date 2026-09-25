@@ -5,5 +5,7 @@ data class SecureItem(
     val title: String,
     val content: String,
     val type: String,
-    val createdAt: Long
+    val createdAt: Long,
+    val imageData: ByteArray? = null,
+    val mimeType: String? = null
 )

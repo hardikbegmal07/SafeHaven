@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class AuthViewModel : ViewModel() {
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Locked)
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Unlocked)
 
     val authState: StateFlow<AuthState> = _authState
 

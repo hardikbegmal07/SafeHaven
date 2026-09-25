@@ -34,7 +34,17 @@ data class SecureItemEntity( // DATABASE
     //  type = "PASSWORD"
     // Then we convert it outside Room.
     /////////////////////// This is called model mapping  /////////////////////////////////////
-    val createdAt: Long
+    val createdAt: Long,
+
+    // encrypted image
+    val imageData: ByteArray? = null,
+
+    // iv required to decrypt image
+    val imageIv: ByteArray? = null,
+
+    // Example: image/jpeg
+    val mimeType: String? = null
+
 ) // ROOM does not care about the enums - domain does
 // this class is NOT our app's main model, It is ONLY the shape of a row in a SQLite table
 

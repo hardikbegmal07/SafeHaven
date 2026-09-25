@@ -40,6 +40,12 @@ class SecureItemRepositoryImpl(
             val encryptedTitle = cryptoManager.encrypt(item.title)
             val encryptedContent = cryptoManager.encrypt(item.content)
 
+            // encrypt image if one exists
+            val encryptedImage = item.imageData?.let {
+                imageBytes ->
+                cryptoManager.encryptBytes(imageBytes)
+            }
+
             dao.insertItem(
                 SecureItemEntity(
                     id = item.id.ifEmpty { UUID.randomUUID().toString() },
@@ -48,7 +54,10 @@ class SecureItemRepositoryImpl(
                     content = encryptedContent.cipherText,
                     contentIv = encryptedContent.iv,
                     type = item.type,
-                    createdAt = item.createdAt
+                    createdAt = item.createdAt,
+                    imageData = encryptedImage?.cipherText,
+                    imageIv = encryptedImage?.iv,
+                    mimeType = item.mimeType
                 )
             )
         }
