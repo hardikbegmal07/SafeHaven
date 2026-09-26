@@ -70,6 +70,44 @@ class SecureItemRepositoryImpl(
         }
     }
 
+    override suspend fun updateItem(item: SecureItem) {
+        withContext(Dispatchers.IO) {
+
+            // Encrypt title
+            val encryptedTitle = cryptoManager.encrypt(item.title)
+
+            // Encrypt content
+            val encryptedContent = cryptoManager.encrypt(item.content)
+
+            // Encrypt image if one exists
+            val encryptedImage = item.imageData?.let { imageBytes ->
+                cryptoManager.encryptBytes(imageBytes)
+            }
+
+            dao.updateItem(
+                SecureItemEntity(
+                    id = item.id,
+
+                    title = encryptedTitle.cipherText,
+                    titleIv = encryptedTitle.iv,
+
+                    content = encryptedContent.cipherText,
+                    contentIv = encryptedContent.iv,
+
+                    type = item.type,
+
+                    createdAt = item.createdAt,
+
+                    imageData = encryptedImage?.cipherText,
+                    imageIv = encryptedImage?.iv,
+
+                    mimeType = item.mimeType
+                )
+            )
+
+        }
+    }
+
     // Decrypt when returning list
     override fun getItems(): Flow<List<SecureItem>> {
         return dao.getAllItems()

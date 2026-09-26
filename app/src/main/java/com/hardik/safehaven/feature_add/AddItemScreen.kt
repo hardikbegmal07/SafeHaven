@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +73,13 @@ fun AddItemScreen(
     var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
 
     var previewUri by remember { mutableStateOf<Uri?>(null) }
+
+    /** When editing an existing item, show its image if available. */
+    LaunchedEffect(viewModel.existingImageData) {
+        viewModel.existingImageData?.let {
+
+        }
+    }
 
     /** GALLERY / PHOTO Picker */
     val galleryLauncher = rememberLauncherForActivityResult(

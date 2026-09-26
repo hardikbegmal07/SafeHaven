@@ -7,6 +7,9 @@ interface SecureItemRepository {
 
     suspend fun addItem(item: SecureItem)
     suspend fun deleteItem(id: String)
+
+    suspend fun updateItem(item: SecureItem)
+
     fun getItems(): Flow<List<SecureItem>>
     fun getItemById(id: String): Flow<SecureItem?>
 }

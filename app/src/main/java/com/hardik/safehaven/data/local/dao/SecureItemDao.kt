@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.hardik.safehaven.data.local.entity.SecureItemEntity
 import com.hardik.safehaven.domain.model.SecureItem
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,9 @@ interface SecureItemDao {
     //  Database access is slow,
     //  It must NOT run on the main thread
     //  suspend forces us to call it from a coroutine
+
+    @Update
+    suspend fun updateItem(item: SecureItemEntity)
 
     @Query("SELECT * FROM secure_items ORDER BY createdAt DESC")
     fun getAllItems(): Flow<List<SecureItemEntity>>
