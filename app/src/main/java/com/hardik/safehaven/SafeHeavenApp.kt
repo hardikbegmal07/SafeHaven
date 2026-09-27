@@ -18,6 +18,7 @@ import com.hardik.safehaven.domain.usecase.AddItemUseCase
 import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
 import com.hardik.safehaven.domain.usecase.GetItemsUseCase
+import com.hardik.safehaven.domain.usecase.UpdateItemUseCase
 import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
 import com.hardik.safehaven.feature_auth.AuthViewModel
 import com.hardik.safehaven.feature_auth.LockScreen
@@ -56,6 +57,7 @@ fun SafeHeavenApp(
     val repository = remember { SecureItemRepositoryImpl(database.secureItemDao(), cryptoManager) }
     val addItemUseCase = remember { AddItemUseCase(repository) }
     val getItemsUseCase = remember { GetItemsUseCase(repository) }
+    val updateItemUseCase = remember { UpdateItemUseCase(repository) }
     val getItemByIdUseCase = remember { GetItemByIdUseCase(repository) }
     val deleteItemUseCase = remember { DeleteItemUseCase(repository) }
     val validateItemUseCase = remember { ValidateItemUseCase() }
@@ -95,6 +97,7 @@ fun SafeHeavenApp(
                 startDestination = Screen.Home.route,
                 addItemUseCase = addItemUseCase,
                 getItemsUseCase = getItemsUseCase,
+                updateItemUseCase = updateItemUseCase,
                 getItemByIdUseCase,
                 deleteItemUseCase = deleteItemUseCase,
                 validateItemUseCase = validateItemUseCase,
@@ -109,6 +112,7 @@ fun SafeHeavenApp(
                 startDestination = Screen.Login.route,
                 addItemUseCase = addItemUseCase,
                 getItemsUseCase = getItemsUseCase,
+                updateItemUseCase = updateItemUseCase,
                 getItemByIdUseCase = getItemByIdUseCase,
                 deleteItemUseCase = deleteItemUseCase,
                 validateItemUseCase = validateItemUseCase,

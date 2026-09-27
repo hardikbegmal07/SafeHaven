@@ -1,6 +1,10 @@
 package com.hardik.safehaven.feature_view
 
+import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,16 +14,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -28,11 +39,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.hardik.safehaven.core.ui.state.UiState
+import com.hardik.safehaven.domain.model.SecureItem
 
 @Composable
 fun ViewItemScreen(
     viewModel: ViewItemViewModel,
     onDelete: () -> Unit,
+    onEdit: (SecureItem) -> Unit
     //itemId: String
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -44,19 +57,47 @@ fun ViewItemScreen(
 //        viewModel.loadItemData(itemId)
 //    }
 
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     when (val state = uiState) {
 
         UiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+
+                CircularProgressIndicator()
+            }
         }
 
-        UiState.Empty -> {  }
+        UiState.Empty -> {
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Text("Item not found")
+            }
+
+        }
 
         is UiState.Error -> {
-            Text(state.message)
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Text(state.message)
+            }
+
         }
 
         is UiState.Success -> {
+
             val item = state.data
 
             Column(
@@ -70,14 +111,18 @@ fun ViewItemScreen(
                 Spacer(Modifier.height(8.dp))
                 Text("Type: ${item.type}")
 
-                Spacer(Modifier.height(16.dp))
+                item.imageData?.let { imageData ->
 
-                item.imageData?.let { uri ->
+                    Spacer(Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    AsyncImage(
-                        model = uri,
+                    Image(
+                        bitmap = BitmapFactory
+                            .decodeByteArray(
+                                imageData,
+                                0,
+                                imageData.size
+                            )
+                            .asImageBitmap(),
                         contentDescription = "Selected document",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -96,8 +141,9 @@ fun ViewItemScreen(
 
                     Button(
                         onClick = {
-                            viewModel.deleteItem()
-                            onDelete()
+                            // viewModel.deleteItem()
+                            // onDelete()
+                            showDeleteDialog = true
                         },
                         modifier = Modifier.width(90.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
@@ -109,7 +155,7 @@ fun ViewItemScreen(
 
                     Button(
                         onClick = {
-                            Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show()
+                            onEdit(item)
                         },
                         modifier = Modifier.width(90.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCBD5F0), contentColor = Color.Black)
@@ -118,6 +164,86 @@ fun ViewItemScreen(
                     }
                 }
 
+            }
+
+            if (showDeleteDialog) {
+
+                AlertDialog(
+
+                    onDismissRequest = {
+                        showDeleteDialog = false
+                    },
+
+                    title = {
+
+                        Text(
+                            text = "Delete Item?",
+                            color = Color(0xFF0E207E),
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+
+                    text = {
+
+                        Text(
+                            text = "Are you sure you want to delete this item?",
+                            color = Color(0xFF0E207E)
+                        )
+                    },
+
+                    confirmButton = {
+
+                        TextButton(
+                            onClick = {
+
+                                showDeleteDialog = false
+
+                                /**
+                                 * NOW actually delete.
+                                 */
+                                viewModel.deleteItem()
+
+                                onDelete()
+                            },
+
+                            modifier = Modifier.background(
+                                Color(0xFFCBD5F0),
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                        ) {
+
+                            Text(
+                                text = "YES",
+                                color = Color(0xFF0E207E),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    },
+
+                    dismissButton = {
+
+                        TextButton(
+                            onClick = {
+
+                                showDeleteDialog = false
+                            },
+
+                            modifier = Modifier.background(
+                                Color(0xFFCBD5F0),
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                        ) {
+
+                            Text(
+                                text = "NO",
+                                color = Color(0xFF0E207E),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    },
+
+                    containerColor = Color.White
+                )
             }
         }
     }

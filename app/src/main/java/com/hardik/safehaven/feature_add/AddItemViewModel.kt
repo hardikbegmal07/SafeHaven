@@ -42,10 +42,6 @@ class AddItemViewModel(
         private set
     // used only for displaying the existing image when editing
 
-    val isEditMode: Boolean
-        get() = editItemId != null
-    // true when AddItemScreen was opened through Edit.
-
     private val _error = MutableStateFlow<String?>(null)
     val error : StateFlow<String?> = _error
 

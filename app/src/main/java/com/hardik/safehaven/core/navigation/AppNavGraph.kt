@@ -13,6 +13,7 @@ import com.hardik.safehaven.domain.usecase.AddItemUseCase
 import com.hardik.safehaven.domain.usecase.DeleteItemUseCase
 import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
 import com.hardik.safehaven.domain.usecase.GetItemsUseCase
+import com.hardik.safehaven.domain.usecase.UpdateItemUseCase
 import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
 import com.hardik.safehaven.feature_add.AddItemScreen
 import com.hardik.safehaven.feature_add.AddItemViewModel
@@ -35,6 +36,7 @@ fun AppNavGraph(
     startDestination: String,
     addItemUseCase: AddItemUseCase,
     getItemsUseCase: GetItemsUseCase,
+    updateItemUseCase: UpdateItemUseCase,
     getItemByIdUseCase: GetItemByIdUseCase,
     deleteItemUseCase: DeleteItemUseCase,
     validateItemUseCase: ValidateItemUseCase,
@@ -64,7 +66,13 @@ fun AppNavGraph(
         // ADD ITEM screen
         composable(Screen.AddItem.route) {
             val viewModel = remember {
-                AddItemViewModel(addItemUseCase, validateItemUseCase)
+                AddItemViewModel(
+                    addItemUseCase,
+                    updateItemUseCase,
+                    validateItemUseCase,
+                    getItemByIdUseCase,
+                    editItemId = null
+                )
             }
             AddItemScreen(
                 viewModel,
@@ -97,6 +105,46 @@ fun AppNavGraph(
             ViewItemScreen(
                 viewModel = viewModel,
                 onDelete = {
+                    navController.popBackStack()
+                },
+                onEdit = { item ->
+                    navController.navigate(
+                        Screen.EditItem.createRoute(
+                            item.id
+                        )
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = Screen.EditItem.route,
+            arguments = listOf(
+                navArgument("itemId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+
+            val itemId =
+                backStackEntry.arguments
+                    ?.getString("itemId")
+                    ?: return@composable
+
+
+            val viewModel = remember(itemId) {
+                AddItemViewModel(
+                    addItemUseCase = addItemUseCase,
+                    updateItemUseCase = updateItemUseCase,
+                    validateItemUseCase = validateItemUseCase,
+                    getItemByIdUseCase = getItemByIdUseCase,
+                    editItemId = itemId
+                )
+            }
+
+            AddItemScreen(
+                viewModel = viewModel,
+                onSave = {
                     navController.popBackStack()
                 }
             )

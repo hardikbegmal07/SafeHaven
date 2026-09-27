@@ -2,10 +2,12 @@ package com.hardik.safehaven.feature_add
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,8 +22,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material3.DropdownMenuItem
@@ -42,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -73,13 +78,6 @@ fun AddItemScreen(
     var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
 
     var previewUri by remember { mutableStateOf<Uri?>(null) }
-
-    /** When editing an existing item, show its image if available. */
-    LaunchedEffect(viewModel.existingImageData) {
-        viewModel.existingImageData?.let {
-
-        }
-    }
 
     /** GALLERY / PHOTO Picker */
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -177,80 +175,136 @@ fun AddItemScreen(
 
         Spacer(Modifier.height(8.dp))
 
-        CustomTextField(
-            "Title",
-            viewModel.title,
-            { viewModel.title = it },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            modifier = Modifier.padding(horizontal = 28.dp)
-        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(
+                    rememberScrollState()
+                )
+        ) {
 
-        CustomTextField(
-            "Content",
-            viewModel.content,
-            { viewModel.content = it },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            modifier = Modifier.padding(horizontal = 28.dp)
-        )
+            CustomTextField(
+                "Title",
+                viewModel.title,
+                { viewModel.title = it },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier.padding(horizontal = 28.dp)
+            )
 
-        Spacer(Modifier.height(8.dp))
+            CustomTextField(
+                "Content",
+                viewModel.content,
+                { viewModel.content = it },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier.padding(horizontal = 28.dp)
+            )
 
-        ItemTypeDropdown(
-            selected = viewModel.type,
-            onSelected = { viewModel.type = it }
-        )
+            Spacer(Modifier.height(8.dp))
 
-        /** Selected Image Preview */
-        previewUri?.let { uri ->
+            ItemTypeDropdown(
+                selected = viewModel.type,
+                onSelected = { viewModel.type = it }
+            )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            /** Selected Image Preview */
+            /**
+                IMAGE PREVIEW
+                Case 1:
+                User selected a new image from gallery/camera
+                → previewUri != null
 
-            AsyncImage(
-                model = uri,
-                contentDescription = "Selected document",
+                Case 2:
+                Editing an existing item and no new image was selected
+                → previewUri == null
+                → existingImageData != null
+             */
+            if (previewUri != null) {
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                AsyncImage(
+                    model = previewUri,
+                    contentDescription = "Selected document",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp)
+                        .height(180.dp)
+                        .clip(
+                            RoundedCornerShape(12.dp)
+                        ),
+                    contentScale = ContentScale.Crop
+                )
+
+            } else if (viewModel.existingImageData != null) {
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                val bitmap = remember(
+                    viewModel.existingImageData
+                ) {
+                    BitmapFactory.decodeByteArray(
+                        viewModel.existingImageData,
+                        0,
+                        viewModel.existingImageData!!.size
+                    )
+                }
+
+                bitmap?.let {
+
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Existing document",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 28.dp)
+                            .height(180.dp)
+                            .clip(
+                                RoundedCornerShape(12.dp)
+                            ),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+
+            /** Upload Document */
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 28.dp)
-                    .height(180.dp)
-                    .clip(
-                        RoundedCornerShape(12.dp)
+                    .padding(top = 20.dp, end = 30.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { showUploadModal = true }
                     ),
-                contentScale = ContentScale.Crop
-            )
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.CloudUpload,
+                    contentDescription = "Upload a document",
+                    tint = Color(0xFF0E207E),
+                    modifier = Modifier.size(20.dp)
+                )
 
-        }
+                Spacer(modifier = Modifier.width(6.dp))
 
-        /** Upload Document */
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp, end = 30.dp)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    onClick = { showUploadModal = true }
-                ),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.CloudUpload,
-                contentDescription = "Upload a document",
-                tint = Color(0xFF0E207E),
-                modifier = Modifier.size(20.dp)
-            )
+                Text(
+                    text = "Upload a Doc",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0E207E)
+                )
+            }
 
-            Spacer(modifier = Modifier.width(6.dp))
-
-            Text(
-                text = "Upload a Doc",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF0E207E)
+            Spacer(
+                modifier = Modifier.height(20.dp)
             )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         error?.let {
             Text(

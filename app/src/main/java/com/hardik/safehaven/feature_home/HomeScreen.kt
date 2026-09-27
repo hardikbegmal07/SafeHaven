@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -157,11 +158,22 @@ fun HomeScreen(
 
                         Spacer(Modifier.height(8.dp))
 
-                        LazyColumn {
-                            items(state.data, key = { it.id }) { item ->
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        ) {
+
+                            items(
+                                state.data,
+                                key = { it.id }
+                            ) { item ->
+
                                 SecureItemRow(
                                     item = item,
-                                    onClick = { onItemClick(item.id) }
+                                    onClick = {
+                                        onItemClick(item.id)
+                                    }
                                 )
                             }
                         }
