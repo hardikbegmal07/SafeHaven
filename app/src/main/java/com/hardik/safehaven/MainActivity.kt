@@ -37,6 +37,12 @@ import kotlinx.coroutines.launch
 // If user returns quickly → stay unlocked
 // If timeout exceeded → lock app
 
+/*
+    Things to do -
+    1) Search functionality to HOME screen
+    2) Firebase Authentication
+*/
+
 class MainActivity : FragmentActivity() { // Component Activity - is a base class that
     // supports lifecycle (lifecycle handling)
     // supports viewModels (viewModel stores)
