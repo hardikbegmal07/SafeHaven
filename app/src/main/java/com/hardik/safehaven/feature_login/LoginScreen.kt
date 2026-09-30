@@ -51,6 +51,16 @@ import androidx.compose.ui.unit.sp
 import com.hardik.safehaven.R
 import com.hardik.safehaven.feature_login.LoginViewModel
 
+/**
+    LoginScreen / SignUpScreen
+            ↓
+       LoginViewModel
+            ↓
+        FirebaseAuth
+            ↓
+    Firebase Authentication
+*/
+
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel,
