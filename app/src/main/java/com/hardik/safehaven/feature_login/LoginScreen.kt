@@ -56,7 +56,7 @@ import com.hardik.safehaven.feature_login.LoginViewModel
             ↓
        LoginViewModel
             ↓
-        FirebaseAuth
+       FirebaseAuth
             ↓
     Firebase Authentication
 */

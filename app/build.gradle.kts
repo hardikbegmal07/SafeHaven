@@ -4,6 +4,7 @@ plugins {
     //kotlin("android")
     //alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -70,6 +71,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7") // for rememberNavController() ....
     implementation("androidx.biometric:biometric:1.2.0-alpha05") // for BiometricPrompt and BiometricManager
     implementation("io.coil-kt:coil-compose:2.7.0")
+//    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
+//    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth:23.1.0")
     implementation(libs.sqlcipher)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
