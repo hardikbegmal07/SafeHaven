@@ -41,6 +41,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hardik.safehaven.R
 import com.hardik.safehaven.feature_login.LoginViewModel
 
@@ -69,6 +71,10 @@ fun LoginScreen(
 ) {
 
     val context = LocalContext.current
+
+    val error by loginViewModel.error.collectAsStateWithLifecycle()
+
+    val isLoading by loginViewModel.isLoading.collectAsStateWithLifecycle()
 
     BackHandler {
         // Clear the entire task and exit the app
@@ -96,7 +102,10 @@ fun LoginScreen(
             "Username",
             loginViewModel.username,
             loginViewModel::onUsernameChanged,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
             modifier = Modifier.padding(horizontal = 28.dp)
         )
 
@@ -131,13 +140,41 @@ fun LoginScreen(
             )
         }
 
+        error?.let {
+
+            Text(
+                text = it,
+                color = Color.Red,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(
+                    start = 28.dp,
+                    end = 28.dp,
+                    top = 8.dp
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.weight(1f))
 
         SubHeaderTextView("Sign Up", {
             onSignUpBtnClicked()
         })
 
-        CommonButton("Continue", { onLoginSuccess() })
+        CommonButton(if (isLoading)
+            "Signing in..."
+            else
+                "Continue",
+            {
+
+                if (!isLoading) {
+
+                    loginViewModel.login {
+                        onLoginSuccess()
+                    }
+
+                }
+
+            })
     }
 
 }
@@ -146,11 +183,12 @@ fun LoginScreen(
 fun SignUpScreen(
     loginViewModel: LoginViewModel,
     onLoginUpBtnClicked: () -> Unit,
+    onSignUpSuccess: () -> Unit
 ) {
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    val error by loginViewModel.error.collectAsStateWithLifecycle()
+
+    val isLoading by loginViewModel.isLoading.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -170,27 +208,30 @@ fun SignUpScreen(
 
         CustomTextField(
             "Username",
-            username,
-            { username = it },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            loginViewModel.username,
+            loginViewModel::onUsernameChanged,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
             modifier = Modifier.padding(horizontal = 28.dp)
         )
 
         CustomTextField(
             label = "Password",
-            value = password,
-            onValueChange = { password = it },
+            value = loginViewModel.password,
+            onValueChange = loginViewModel::onPasswordChanged,
             isPassword = true,
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Next
             ),
             modifier = Modifier.padding(horizontal = 28.dp)
         )
 
         CustomTextField(
             label = "Confirm Password",
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            value = loginViewModel.confirmPassword,
+            onValueChange = loginViewModel::onConfirmPasswordChanged,
             isPassword = true,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
@@ -198,11 +239,34 @@ fun SignUpScreen(
             modifier = Modifier.padding(horizontal = 28.dp)
         )
 
+        error?.let {
+
+            Text(
+                text = it,
+                color = Color.Red,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(
+                    start = 28.dp,
+                    end = 28.dp,
+                    top = 8.dp
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.weight(1f))
 
         SubHeaderTextView("Login", onLoginUpBtnClicked)
 
-        CommonButton("Continue", { /* TODO */ })
+        CommonButton(
+            if (isLoading)
+                    "Creating account ..."
+                else
+                    "Continue",
+            {
+                loginViewModel.signUp {
+                    onSignUpSuccess()
+                }
+            })
     }
 
 }

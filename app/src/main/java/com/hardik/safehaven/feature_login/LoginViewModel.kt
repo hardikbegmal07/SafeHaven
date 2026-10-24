@@ -41,6 +41,13 @@ class LoginViewModel(private val auth: FirebaseAuth) : ViewModel() {
         _error.value = null
     }
 
+    fun resetData() {
+        username = ""
+        password = ""
+        confirmPassword = ""
+        _error.value = null
+    }
+
     fun login(
         onSuccess: () -> Unit
     ) {
