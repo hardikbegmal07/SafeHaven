@@ -161,6 +161,8 @@ fun AppNavGraph(
             LoginScreen(
                 loginViewModel,
                 {
+                    loginViewModel.resetData()
+
                     navController.navigate(Screen.SignUp.route)
                 },
                 {
@@ -169,11 +171,11 @@ fun AppNavGraph(
                     sessionManager.saveLogin(expiryTime)
 
                     navController.navigate(Screen.Home.route) {
-//                        popUpTo(Screen.Login.route) {
-//                            inclusive = true
-//                        }
-//
-//                        launchSingleTop = true
+                        popUpTo(Screen.Login.route) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
                     }
                 }
             )
@@ -182,8 +184,30 @@ fun AppNavGraph(
         composable(Screen.SignUp.route) {
             SignUpScreen(loginViewModel,
                 {
-                    navController.navigate(Screen.Login.route)
-                })
+                    loginViewModel.resetData()
+
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.SignUp.route) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                onSignUpSuccess = {
+                    navController.navigate(
+                        Screen.Home.route
+                    ) {
+
+                        popUpTo(
+                            Screen.SignUp.route
+                        ) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
     }
 } // describes all the screens of our app, and how we move between them
