@@ -8,10 +8,13 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.remember
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.hardik.safehaven.core.auth.SecurityUtils
 import com.hardik.safehaven.core.auth.SessionManager
 import com.hardik.safehaven.core.theme.SafeHavenTheme
@@ -49,7 +52,7 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
     // supports Jetpack compose (saved state, compose support)
 
     private val authViewModel: AuthViewModel by viewModels()
-    private val loginViewModel: LoginViewModel by viewModels()
+    private val loginViewModel: LoginViewModel = LoginViewModel(FirebaseAuth.getInstance())
 
     private lateinit var sessionManager: SessionManager
 
