@@ -173,9 +173,10 @@ fun AppNavGraph(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) {
                             inclusive = true
-                        }
+                        } // remove screens from back stack until you reach the specified destination, including destination
 
-                        launchSingleTop = true
+                        launchSingleTop = true // prevents Navigation compose from creating
+                        // another copy of the destination if that destination is already at the top of the back stack
                     }
                 }
             )
@@ -194,13 +195,9 @@ fun AppNavGraph(
                     }
                 },
                 onSignUpSuccess = {
-                    navController.navigate(
-                        Screen.Home.route
-                    ) {
+                    navController.navigate(Screen.Home.route) {
 
-                        popUpTo(
-                            Screen.SignUp.route
-                        ) {
+                        popUpTo(Screen.Login.route) {
                             inclusive = true
                         }
 

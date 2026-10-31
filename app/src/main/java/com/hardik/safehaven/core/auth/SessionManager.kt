@@ -3,7 +3,7 @@ package com.hardik.safehaven.core.auth
 import android.content.Context
 import androidx.core.content.edit
 
-class SessionManager(private val context: Context) {
+class SessionManager(context: Context) {
 
     private val prefs = context.getSharedPreferences(
         "safehaven_session",
