@@ -46,10 +46,7 @@ import kotlinx.coroutines.launch
     2) Firebase Authentication
 */
 
-class MainActivity : FragmentActivity() { // Component Activity - is a base class that
-    // supports lifecycle (lifecycle handling)
-    // supports viewModels (viewModel stores)
-    // supports Jetpack compose (saved state, compose support)
+class MainActivity : FragmentActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
     private val loginViewModel: LoginViewModel = LoginViewModel(FirebaseAuth.getInstance())
@@ -72,9 +69,9 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 //        if (timeInBackground > LOCK_TIMEOUT) {
 //            lifecycleScope.launch {
 //                delay(300)
-//                authViewModel.lock()
+//                // authViewModel.lock()
 //            } // lock() happens BEFORE collectors active
-////            authViewModel.requireLogin()
+//            authViewModel.requireLogin()
 //        }
 //
 //        appBackgroundTime = null
@@ -119,12 +116,12 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 //            }
 //        }
 
-//        if (sessionManager.isSessionValid()) {
-//            authViewModel.unlock()
-//        } else {
-//            // authViewModel.requireLogin()
-//            authViewModel.lock()
-//        }
+        if (sessionManager.isSessionValid()) {
+            authViewModel.unlock()
+        } else {
+            authViewModel.requireLogin()
+            // authViewModel.lock()
+        }
 
         setContent {
             SafeHavenTheme {
@@ -137,14 +134,14 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 
-    private fun startAutoLockTimer() {
-
+//    private fun startAutoLockTimer() {
+//
 //        // If already locked, do nothing
 //        if (authViewModel.authState.value is AuthState.Locked) {
 //            lockJob?.cancel()
 //            return
 //        }
-
+//
 //        lockJob?.cancel()
 //
 //        lockJob = lifecycleScope.launch {
@@ -152,10 +149,11 @@ class MainActivity : FragmentActivity() { // Component Activity - is a base clas
 //            //authViewModel.lock()
 //
 //            if (authViewModel.authState.value is AuthState.Unlocked) {
-//                authViewModel.lock()
+//                // authViewModel.lock() //////////////// it should be .lock() for biometric login
+//                authViewModel.requireLogin() // login screen instead to bypass biometric login
 //            }
 //        }
-    }
+//    }
 
 //    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
 //        if (authViewModel.authState.value is AuthState.Unlocked) {
