@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class AuthViewModel : ViewModel() {
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.LoginRequired)
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Locked)
 
     val authState: StateFlow<AuthState> = _authState
 
@@ -20,9 +20,9 @@ class AuthViewModel : ViewModel() {
         _authState.value = AuthState.Unlocked
     }
 
-    fun requireLogin() {
-        _authState.value = AuthState.LoginRequired
-    }
+//    fun requireLogin() {
+//        _authState.value = AuthState.LoginRequired
+//    }
 
     fun lock() {
         _authState.value = AuthState.Locked

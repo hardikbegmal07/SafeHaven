@@ -43,9 +43,9 @@ import com.hardik.safehaven.feature_auth.auth.AuthState
 @Composable
 fun SafeHeavenApp(
     authViewModel: AuthViewModel,
-    loginViewModel: LoginViewModel,
+    // loginViewModel: LoginViewModel,
     activity: FragmentActivity,
-    sessionManager: SessionManager
+    // sessionManager: SessionManager
 ) {
 
     val context = LocalContext.current
@@ -85,7 +85,7 @@ fun SafeHeavenApp(
             LockScreen(
                 authTrigger = authTrigger,
                 onAuthenticated = { authViewModel.unlock() },
-                onAuthenticationFailed = { authViewModel.requireLogin() },
+                onAuthenticationFailed = { /*authViewModel.requireLogin()*/ activity.finish() },
                 biometricHelper = biometricHelper
             )
 
@@ -100,13 +100,11 @@ fun SafeHeavenApp(
                 updateItemUseCase = updateItemUseCase,
                 getItemByIdUseCase,
                 deleteItemUseCase = deleteItemUseCase,
-                validateItemUseCase = validateItemUseCase,
-                loginViewModel,
-                sessionManager
+                validateItemUseCase = validateItemUseCase
             )
         }
 
-        is AuthState.LoginRequired -> {
+        /*is AuthState.LoginRequired -> {
             AppNavGraph(
                 navController = navController,
                 startDestination = Screen.Login.route,
@@ -119,7 +117,7 @@ fun SafeHeavenApp(
                 loginViewModel = loginViewModel,
                 sessionManager
             )
-        }
+        }*/
     }
     // IMP : if we will create the repository inside each screen, every screen would have its own fake data,
     // and nothing would work together ...

@@ -25,62 +25,35 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// Week3
-//  Rule of this week:
-//  -> UI never talks to Room
-//  -> viewModels can never talk to room
-//  -> Room never knows about compose
-//  -> Domain models (data classes that represent core business entities) never depend on ROOM
-
-// we are going to do this way :
-// App goes background
-//     ↓
-// Start grace timer
-//     ↓
-// If user returns quickly → stay unlocked
-// If timeout exceeded → lock app
-
-/*
-    Things to do -
-    1) Search functionality to HOME screen
-    2) Firebase Authentication
-*/
-
 class MainActivity : FragmentActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
-    private val loginViewModel: LoginViewModel = LoginViewModel(FirebaseAuth.getInstance())
 
-    private lateinit var sessionManager: SessionManager
-
-    private var lockJob: Job? = null
-    private var appBackgroundTime: Long? = null
+    private var lockJob: Job? = null // when should the app lock bcz the user is inactive ?
+    private var appBackgroundTime: Long? = null // how long has the app been in the background ?
 
     override fun onStart() {
         super.onStart()
 
-//        val backgroundTime = appBackgroundTime ?: return
-//
-//        val currentTime = System.currentTimeMillis()
-//        val timeInBackground = currentTime - backgroundTime
-//
-//        val LOCK_TIMEOUT = 90_000L // 90 sec
-//
-//        if (timeInBackground > LOCK_TIMEOUT) {
-//            lifecycleScope.launch {
-//                delay(300)
-//                // authViewModel.lock()
-//            } // lock() happens BEFORE collectors active
-//            authViewModel.requireLogin()
-//        }
-//
-//        appBackgroundTime = null
+        val backgroundTime = appBackgroundTime ?: return
+
+        val currentTime = System.currentTimeMillis()
+        val timeInBackground = currentTime - backgroundTime
+
+        val LOCK_TIMEOUT = 90_000L // 90 sec
+
+        if (timeInBackground > LOCK_TIMEOUT) {
+            lifecycleScope.launch {
+                delay(300)
+                authViewModel.lock()
+            }
+        }
+
+        appBackgroundTime = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        sessionManager = SessionManager(this@MainActivity)
 
         if (SecurityUtils.isDeviceRooted()) {
             showSecurityErrorAndExit("Rooted device detected")
@@ -104,28 +77,21 @@ class MainActivity : FragmentActivity() {
 
         enableEdgeToEdge()
 
-//        lifecycleScope.launch {
-//            repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                authViewModel.authState.collect { state ->
-//                    if (state is AuthState.Unlocked) {
-//                        startAutoLockTimer()
-//                    } else {
-//                        lockJob?.cancel()
-//                    }
-//                }
-//            }
-//        }
-
-        if (sessionManager.isSessionValid()) {
-            authViewModel.unlock()
-        } else {
-            authViewModel.requireLogin()
-            // authViewModel.lock()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                authViewModel.authState.collect { state ->
+                    if (state is AuthState.Unlocked) {
+                        startAutoLockTimer()
+                    } else {
+                        lockJob?.cancel()
+                    }
+                }
+            }
         }
 
         setContent {
             SafeHavenTheme {
-                SafeHeavenApp(authViewModel, loginViewModel, activity = this, sessionManager)
+                SafeHeavenApp(authViewModel, activity = this)
             }
         }
     }
@@ -134,38 +100,38 @@ class MainActivity : FragmentActivity() {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 
-//    private fun startAutoLockTimer() {
-//
-//        // If already locked, do nothing
-//        if (authViewModel.authState.value is AuthState.Locked) {
-//            lockJob?.cancel()
-//            return
-//        }
-//
-//        lockJob?.cancel()
-//
-//        lockJob = lifecycleScope.launch {
-//            delay(60_000) // extended this auto lock to 5mins ...
-//            //authViewModel.lock()
-//
-//            if (authViewModel.authState.value is AuthState.Unlocked) {
-//                // authViewModel.lock() //////////////// it should be .lock() for biometric login
-//                authViewModel.requireLogin() // login screen instead to bypass biometric login
-//            }
-//        }
-//    }
+    private fun startAutoLockTimer() {
 
-//    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-//        if (authViewModel.authState.value is AuthState.Unlocked) {
-//            startAutoLockTimer()
-//        }
-//        return super.dispatchTouchEvent(ev)
-//    }
+        // If already locked, do nothing
+        if (authViewModel.authState.value is AuthState.Locked) {
+            lockJob?.cancel()
+            return
+        }
+
+        lockJob?.cancel()
+
+        lockJob = lifecycleScope.launch {
+            delay(180_000) // extended this auto lock to 5 mins ...
+            //authViewModel.lock()
+
+            if (authViewModel.authState.value is AuthState.Unlocked) {
+                authViewModel.lock()
+
+            }
+        }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (authViewModel.authState.value is AuthState.Unlocked) {
+            startAutoLockTimer()
+        }
+        return super.dispatchTouchEvent(ev)
+    }
 
     override fun onStop() {
         super.onStop()
 
-        // appBackgroundTime = System.currentTimeMillis()
+         appBackgroundTime = System.currentTimeMillis()
         // why onStop ?
         // BECAUSE
         //  - app fully hidden
@@ -173,33 +139,4 @@ class MainActivity : FragmentActivity() {
         //  - avoids transient UI interruptions
     }
 
-} // Android OS needs a lifecycle owner (Activity, Fragment)
-// MainActivity extends ComponentActivity
-// ComponentActivity implements LifecycleOwner
-// need something to attach to UI and handle rotation, background, kill, recreate
-
-// Android Architecture answers one question:
-//  Where should i put my code, so that the app doesn't become garbage ??
-
-// 3 Main Layers of Android Architecture are
-//  UI components -> ViewModel -> Repository -> Data Source (Room / API / files)
-
-// Data is encrypted AND access is strictly controlled at runtime.
-
-/*
-  Optimized flow for our app -
-
-  App Launch
-      ↓
-  LockScreen
-      ↓
-  Biometric Success
-      ↓
-  Home Screen
-
-*/
-
-// we are now going to implement:
-//  Lock after 60 seconds inactivity
-//  Lock on background
-//  Lock on process death
+}

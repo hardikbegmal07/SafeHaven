@@ -39,9 +39,7 @@ fun AppNavGraph(
     updateItemUseCase: UpdateItemUseCase,
     getItemByIdUseCase: GetItemByIdUseCase,
     deleteItemUseCase: DeleteItemUseCase,
-    validateItemUseCase: ValidateItemUseCase,
-    loginViewModel: LoginViewModel,
-    sessionManager: SessionManager
+    validateItemUseCase: ValidateItemUseCase
 ) {
 
     NavHost(
@@ -153,58 +151,6 @@ fun AppNavGraph(
         // SETTINGS screen
         composable(Screen.Settings.route) {
             Text("Settings (Coming Soon)")
-        }
-
-        // Login Screen
-        composable(Screen.Login.route) {
-
-            LoginScreen(
-                loginViewModel,
-                {
-                    loginViewModel.resetData()
-
-                    navController.navigate(Screen.SignUp.route)
-                },
-                {
-                    val expiryTime = System.currentTimeMillis() + 1 * 60 * 1000L // 1 mins
-
-                    sessionManager.saveLogin(expiryTime)
-
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) {
-                            inclusive = true
-                        } // remove screens from back stack until you reach the specified destination, including destination
-
-                        launchSingleTop = true // prevents Navigation compose from creating
-                        // another copy of the destination if that destination is already at the top of the back stack
-                    }
-                }
-            )
-        }
-
-        composable(Screen.SignUp.route) {
-            SignUpScreen(loginViewModel,
-                {
-                    loginViewModel.resetData()
-
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.SignUp.route) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    }
-                },
-                onSignUpSuccess = {
-                    navController.navigate(Screen.Home.route) {
-
-                        popUpTo(Screen.Login.route) {
-                            inclusive = true
-                        }
-
-                        launchSingleTop = true
-                    }
-                }
-            )
         }
     }
 } // describes all the screens of our app, and how we move between them

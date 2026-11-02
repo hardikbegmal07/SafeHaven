@@ -20,7 +20,7 @@ class SessionManager(context: Context) {
             putBoolean(IS_LOGGED_IN, true)
                 .putLong(SESSION_EXPIRY, expiryTime)
         }
-    }
+    } // it stores or retrieves an expiry time
 
     fun isSessionValid(): Boolean {
         val isLoggedIn = prefs.getBoolean(IS_LOGGED_IN, false)
