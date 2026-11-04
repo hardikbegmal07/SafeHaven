@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -183,7 +184,9 @@ fun HomeScreenContent(
         ) {
             when (val state = uiState.state) {
                 is UiState.Loading -> {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.testTag("loading_indicator")
+                    )
                 }
 
                 is UiState.Empty -> {
@@ -215,6 +218,8 @@ fun HomeScreenContent(
 
                                 SecureItemRow(
                                     item = item,
+                                    modifier = Modifier.testTag("item_${item.id}"),
+                                    // testTag - Helps identify composables during automated testing
                                     onClick = {
                                         onItemClick(item.id)
                                     }

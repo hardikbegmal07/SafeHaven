@@ -10,14 +10,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.hardik.safehaven.domain.model.SecureItem
 
 @Composable
-fun SecureItemRow(item: SecureItem, onClick: () -> Unit) {
+fun SecureItemRow(
+    item: SecureItem,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick() },
+        modifier = modifier.fillMaxWidth().padding(8.dp).clickable { onClick() },
+        // modifier must be passed down and applied to the actual UI element
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFDDE3F6)
         )
