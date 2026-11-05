@@ -89,4 +89,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // Coroutine and Flow Testing
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    // Mocking dependencies
+    testImplementation(libs.mockk)
 }
