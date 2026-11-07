@@ -29,8 +29,8 @@ class MainActivity : FragmentActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
 
-    private var lockJob: Job? = null // when should the app lock bcz the user is inactive ?
-    private var appBackgroundTime: Long? = null // how long has the app been in the background ?
+    private var lockJob: Job? = null // when should the app lock bcz the user is inactive ? inactive on app ....
+    private var appBackgroundTime: Long? = null // how long has the app been in the background ? in background ...
 
     override fun onStart() {
         super.onStart()
@@ -111,7 +111,7 @@ class MainActivity : FragmentActivity() {
         lockJob?.cancel()
 
         lockJob = lifecycleScope.launch {
-            delay(180_000) // extended this auto lock to 5 mins ...
+            delay(300_000) // 5 mins ...
             //authViewModel.lock()
 
             if (authViewModel.authState.value is AuthState.Unlocked) {

@@ -8,6 +8,7 @@ import com.hardik.safehaven.feature_home.HomeViewModel
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -160,6 +161,60 @@ class HomeViewModelTest {
             assertEquals("Personal Notes", result[0].title)
 
             job.cancel()
+        }
+
+    @Test
+    fun homeViewModel_databaseThrowsException_returnsErrorState() =
+        runTest(mainDispatcherRule.testDispatcher) {
+
+            // Arrange
+            every {
+                getItemsUseCase()
+            } returns flow {
+                throw RuntimeException("Database failure")
+            }
+
+            viewModel = HomeViewModel(getItemsUseCase)
+
+            val job = backgroundScope.launch(
+                UnconfinedTestDispatcher(testScheduler)
+            ) {
+                viewModel.uiState.collect {  }
+            }
+
+            // Act
+            advanceUntilIdle()
+
+            // Assert
+            val state = viewModel.uiState.value.state
+
+            assertTrue(state is UiState.Error)
+
+            assertEquals(
+                "Failed to load items",
+                (state as UiState.Error).message
+            )
+
+            job.cancel()
+        }
+
+    @Test
+    fun homeViewModel_initialState_returnsLoading() =
+        runTest(mainDispatcherRule.testDispatcher) {
+
+            // Arrange
+            every {
+                getItemsUseCase()
+            } returns flow {
+                kotlinx.coroutines.awaitCancellation()
+            }
+
+            // Act
+            viewModel = HomeViewModel(getItemsUseCase)
+
+            // Assert
+            assertTrue(viewModel.uiState.value.state is UiState.Loading)
+
         }
 
 }

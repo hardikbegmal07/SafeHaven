@@ -313,11 +313,4 @@ class HomeScreenTest {
             .assertDoesNotExist()
     }
 
-    @Test
-    fun homeScreen_databaseEmpty_emptyStateAppears() {
-
-
-
-    }
-
 }
