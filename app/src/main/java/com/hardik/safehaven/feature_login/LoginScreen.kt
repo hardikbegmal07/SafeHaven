@@ -46,12 +46,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hardik.safehaven.R
-import com.hardik.safehaven.feature_login.LoginViewModel
 
 /**
     LoginScreen / SignUpScreen
@@ -160,11 +158,12 @@ fun LoginScreen(
             onSignUpBtnClicked()
         })
 
-        CommonButton(if (isLoading)
-            "Signing in..."
-            else
-                "Continue",
-            {
+        CommonButton(
+            if (isLoading)
+                "Signing in..."
+                else
+                    "Continue",
+            onClick = {
 
                 if (!isLoading) {
 
@@ -174,7 +173,8 @@ fun LoginScreen(
 
                 }
 
-            })
+            },
+        )
     }
 
 }
@@ -262,11 +262,12 @@ fun SignUpScreen(
                     "Creating account ..."
                 else
                     "Continue",
-            {
+            onClick = {
                 loginViewModel.signUp {
                     onSignUpSuccess()
                 }
-            })
+            },
+        )
     }
 
 }
@@ -359,10 +360,10 @@ fun CustomTextField(
 
 
 @Composable
-fun CommonButton(title: String, onClick: () -> Unit) {
+fun CommonButton(title: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 30.dp, end = 30.dp, top = 10.dp, bottom = 80.dp)
             .height(55.dp),

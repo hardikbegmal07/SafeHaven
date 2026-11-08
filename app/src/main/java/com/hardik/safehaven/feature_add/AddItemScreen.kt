@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -61,7 +61,6 @@ import com.hardik.safehaven.domain.model.ItemType
 import com.hardik.safehaven.feature_login.CommonButton
 import com.hardik.safehaven.feature_login.CustomTextField
 import com.hardik.safehaven.feature_login.HeaderTextView
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun AddItemScreen(
@@ -189,7 +188,7 @@ fun AddItemScreen(
                 viewModel.title,
                 { viewModel.title = it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                modifier = Modifier.padding(horizontal = 28.dp)
+                modifier = Modifier.padding(horizontal = 28.dp).testTag("title_field")
             )
 
             CustomTextField(
@@ -197,7 +196,7 @@ fun AddItemScreen(
                 viewModel.content,
                 { viewModel.content = it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                modifier = Modifier.padding(horizontal = 28.dp)
+                modifier = Modifier.padding(horizontal = 28.dp).testTag("content_field")
             )
 
             Spacer(Modifier.height(8.dp))
@@ -280,7 +279,7 @@ fun AddItemScreen(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = { showUploadModal = true }
-                    ),
+                    ).testTag("upload_document"),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -318,7 +317,7 @@ fun AddItemScreen(
             )
         }
 
-        CommonButton("Save") {
+        CommonButton("Save", modifier = Modifier.testTag("save_button")) {
             viewModel.saveItem {
                 onSave()
             }
@@ -385,7 +384,7 @@ fun ItemTypeDropdown(
                     width = 1.dp,
                     color = primaryColor,
                     shape = fieldShape
-                ),
+                ).testTag("item_type_dropdown"),
             shape = fieldShape,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,

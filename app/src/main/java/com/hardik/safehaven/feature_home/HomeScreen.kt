@@ -56,36 +56,13 @@ fun HomeScreen(
         onItemClick = onItemClick
     )
 
+    // why we have separated Home screen and HomeScreenContent ?
 
-//        if(uiState.items.isEmpty()) {
-//            Box(modifier = Modifier.fillMaxSize().padding(padding),
-//                contentAlignment = Alignment.Center) {
-//                Text("No Secure Items yet")
-//            }
-//        } else {
-//            LazyColumn(modifier = Modifier.padding(padding)) {
-//                items(uiState.items) { item ->
-//                    SecureItemRow(item, onClick = { onItemClick(item.id) })
-//                }
-//            }
-//        }
     // why collectAsStateWithLifecycle() ?
     //  Stops collecting when screen is not visible
     //  Prevents memory leaks
     //  handles lifecycle automatically
 
-//    LaunchedEffect(Unit) {
-//        viewModel.loadItems()
-//    } // LaunchedEffect tell that run this once when the screen enters composition
-    // composables can recompose multiple times
-    // you do not want to call loadItems(), every recompose
-
-
-//    Column {
-//        Text("Items: ${state.items.size}")
-//        Button(onClick = onAddClick) { Text("Add Item") }
-//        Button(onClick = onViewClick) { Text("View Item") }
-//    }
 }
 
 @Composable
