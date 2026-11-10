@@ -164,6 +164,89 @@ fun AddItemScreen(
 
     }
 
+    // viewModel state
+    val title = viewModel.title
+    val content = viewModel.content
+    val type = viewModel.type
+    val existingImageData = viewModel.existingImageData
+
+    // Screen content
+    AddItemScreenContent(
+        title = title,
+        content = content,
+        type = type,
+        error = error,
+
+        existingImageData = existingImageData,
+        selectedImageUri = previewUri,
+
+        onTitleChange = {
+            viewModel.title = it
+        },
+
+        onContentChange = {
+            viewModel.content = it
+        },
+
+        onTypeChange = {
+            viewModel.type = it
+        },
+
+        onUploadClick = {
+            showUploadModal = true
+        },
+
+        onSaveClick = {
+
+            viewModel.saveItem {
+                onSave()
+            }
+        }
+    )
+
+    if (showUploadModal) {
+        UploadDocumentModal(
+            onDismiss = {
+                showUploadModal = false
+            },
+            onCameraClick = {
+                showUploadModal = false
+
+                openCamera()
+            },
+            onGalleryClick = {
+                showUploadModal = false
+
+                galleryLauncher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts
+                            .PickVisualMedia
+                            .ImageOnly
+                    )
+                )
+            }
+        )
+    }
+}
+
+@Composable
+fun AddItemScreenContent(
+    title: String,
+    content: String,
+    type: ItemType,
+    error: String?,
+
+    existingImageData: ByteArray?,
+    selectedImageUri: Uri?,
+
+    onTitleChange: (String) -> Unit,
+    onContentChange: (String) -> Unit,
+    onTypeChange: (ItemType) -> Unit,
+
+    onUploadClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -185,16 +268,16 @@ fun AddItemScreen(
 
             CustomTextField(
                 "Title",
-                viewModel.title,
-                { viewModel.title = it },
+                title,
+                onTitleChange,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 modifier = Modifier.padding(horizontal = 28.dp).testTag("title_field")
             )
 
             CustomTextField(
                 "Content",
-                viewModel.content,
-                { viewModel.content = it },
+                content,
+                onContentChange,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 modifier = Modifier.padding(horizontal = 28.dp).testTag("content_field")
             )
@@ -202,30 +285,30 @@ fun AddItemScreen(
             Spacer(Modifier.height(8.dp))
 
             ItemTypeDropdown(
-                selected = viewModel.type,
-                onSelected = { viewModel.type = it }
+                selected = type,
+                onSelected = onTypeChange
             )
 
             /** Selected Image Preview */
             /**
-                IMAGE PREVIEW
-                Case 1:
-                User selected a new image from gallery/camera
-                → previewUri != null
+            IMAGE PREVIEW
+            Case 1:
+            User selected a new image from gallery/camera
+            → previewUri != null
 
-                Case 2:
-                Editing an existing item and no new image was selected
-                → previewUri == null
-                → existingImageData != null
+            Case 2:
+            Editing an existing item and no new image was selected
+            → previewUri == null
+            → existingImageData != null
              */
-            if (previewUri != null) {
+            if (selectedImageUri != null) {
 
                 Spacer(
                     modifier = Modifier.height(8.dp)
                 )
 
                 AsyncImage(
-                    model = previewUri,
+                    model = selectedImageUri,
                     contentDescription = "Selected document",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -233,23 +316,23 @@ fun AddItemScreen(
                         .height(180.dp)
                         .clip(
                             RoundedCornerShape(12.dp)
-                        ),
+                        ).testTag("selected_image_preview"),
                     contentScale = ContentScale.Crop
                 )
 
-            } else if (viewModel.existingImageData != null) {
+            } else if (existingImageData != null) {
 
                 Spacer(
                     modifier = Modifier.height(8.dp)
                 )
 
                 val bitmap = remember(
-                    viewModel.existingImageData
+                    existingImageData
                 ) {
                     BitmapFactory.decodeByteArray(
-                        viewModel.existingImageData,
+                        existingImageData,
                         0,
-                        viewModel.existingImageData!!.size
+                        existingImageData.size
                     )
                 }
 
@@ -264,7 +347,7 @@ fun AddItemScreen(
                             .height(180.dp)
                             .clip(
                                 RoundedCornerShape(12.dp)
-                            ),
+                            ).testTag("existing_image_preview"),
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -278,7 +361,7 @@ fun AddItemScreen(
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
-                        onClick = { showUploadModal = true }
+                        onClick = onUploadClick
                     ).testTag("upload_document"),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
@@ -313,39 +396,13 @@ fun AddItemScreen(
                 modifier = Modifier.padding(
                     horizontal = 28.dp,
                     vertical = 4.dp
-                )
+                ).testTag("add_item_error")
             )
         }
 
         CommonButton("Save", modifier = Modifier.testTag("save_button")) {
-            viewModel.saveItem {
-                onSave()
-            }
+            onSaveClick()
         }
-    }
-
-    if (showUploadModal) {
-        UploadDocumentModal(
-            onDismiss = {
-                showUploadModal = false
-            },
-            onCameraClick = {
-                showUploadModal = false
-
-                openCamera()
-            },
-            onGalleryClick = {
-                showUploadModal = false
-
-                galleryLauncher.launch(
-                    PickVisualMediaRequest(
-                        ActivityResultContracts
-                            .PickVisualMedia
-                            .ImageOnly
-                    )
-                )
-            }
-        )
     }
 }
 
