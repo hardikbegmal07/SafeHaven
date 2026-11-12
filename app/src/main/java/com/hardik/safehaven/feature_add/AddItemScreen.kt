@@ -271,7 +271,7 @@ fun AddItemScreenContent(
                 title,
                 onTitleChange,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                modifier = Modifier.padding(horizontal = 28.dp).testTag("title_field")
+                modifier = Modifier.padding(horizontal = 28.dp)
             )
 
             CustomTextField(
@@ -279,7 +279,7 @@ fun AddItemScreenContent(
                 content,
                 onContentChange,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                modifier = Modifier.padding(horizontal = 28.dp).testTag("content_field")
+                modifier = Modifier.padding(horizontal = 28.dp)
             )
 
             Spacer(Modifier.height(8.dp))

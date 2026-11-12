@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -307,6 +308,13 @@ fun CustomTextField(
                     width = 1.dp,
                     color = Color(0xFF0E207E),
                     shape = RoundedCornerShape(5.dp)
+                )
+                .testTag(
+                    when (label) {
+                        "Title" -> "title_field"
+                        "Content" -> "content_field"
+                        else -> "custom_text_field"
+                    }
                 ),
 
             singleLine = true,
