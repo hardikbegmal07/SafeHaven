@@ -22,6 +22,7 @@ import com.hardik.safehaven.feature_add.AddItemScreenContent
 import com.hardik.safehaven.feature_add.AddItemViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -240,6 +241,34 @@ class AddItemScreenTest {
             .assertTextContains("PASSWORD")
     }
 
-    // need to update the test cases for remaining screen and then viewModel as well
+    @Test
+    fun addItemScreen_uploadButtonInvokesCallback() {
+
+        var uploadClicked = false
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = null,
+                existingImageData = null,
+                selectedImageUri = null,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {
+                    uploadClicked = true
+                },
+                onSaveClick = {}
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("upload_document")
+            .performClick()
+
+        assertTrue(uploadClicked)
+    }
 
 }
