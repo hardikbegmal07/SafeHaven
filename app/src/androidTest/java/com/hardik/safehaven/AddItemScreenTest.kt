@@ -271,4 +271,35 @@ class AddItemScreenTest {
         assertTrue(uploadClicked)
     }
 
+    // save button tests
+    @Test
+    fun addItemScreen_saveButtonInvokesCallback() {
+
+        var saveClicked = false
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = null,
+                existingImageData = null,
+                selectedImageUri = null,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {},
+                onSaveClick = {
+                    saveClicked = true
+                }
+            )
+        }
+
+        composeTestRule
+            .onNodeWithText("Save")
+            .performClick()
+
+        assertTrue(saveClicked)
+    }
+
 }
