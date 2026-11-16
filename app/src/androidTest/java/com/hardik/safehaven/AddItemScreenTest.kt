@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -300,6 +301,57 @@ class AddItemScreenTest {
             .performClick()
 
         assertTrue(saveClicked)
+    }
+
+    // Error message is displayed when available
+    @Test
+    fun addItemScreen_displaysErrorMessageWhenAvailable() {
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = "Title cannot be empty",
+                existingImageData = null,
+                selectedImageUri = null,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {},
+                onSaveClick = {}
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("add_item_error")
+            .assertIsDisplayed()
+            .assertTextEquals("Title cannot be empty")
+    }
+
+    // Error message is not displayed when null
+    @Test
+    fun addItemScreen_doesNotDisplayErrorWhenNull() {
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = null,
+                existingImageData = null,
+                selectedImageUri = null,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {},
+                onSaveClick = {}
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("add_item_error")
+            .assertDoesNotExist()
     }
 
 }
