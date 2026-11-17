@@ -1,5 +1,6 @@
 package com.hardik.safehaven
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -351,6 +353,115 @@ class AddItemScreenTest {
 
         composeTestRule
             .onNodeWithTag("add_item_error")
+            .assertDoesNotExist()
+    }
+
+    // existing image preview test
+    @Test
+    fun addItemScreen_displaysExistingImageWhenAvailable() {
+
+        val bitmap = Bitmap.createBitmap(
+            100,
+            100,
+            Bitmap.Config.ARGB_8888
+        )
+
+        val outputStream = java.io.ByteArrayOutputStream()
+
+        bitmap.compress(
+            Bitmap.CompressFormat.PNG,
+            100,
+            outputStream
+        )
+
+        val imageBytes = outputStream.toByteArray()
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = null,
+                existingImageData = imageBytes,
+                selectedImageUri = null,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {},
+                onSaveClick = {}
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("existing_image_preview")
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithContentDescription("Existing document")
+            .assertIsDisplayed()
+
+        bitmap.recycle()
+    }
+
+    // selected image preview test
+    @Test
+    fun addItemScreen_displaysSelectedImageWhenUriAvailable() {
+
+        val selectedUri = Uri.parse(
+            "content://com.hardik.safehaven.test/selected-image"
+        )
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = null,
+                existingImageData = null,
+                selectedImageUri = selectedUri,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {},
+                onSaveClick = {}
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("selected_image_preview")
+            .assertExists()
+
+        composeTestRule
+            .onNodeWithContentDescription("Selected document")
+            .assertExists()
+    }
+
+    // No image preview test
+    @Test
+    fun addItemScreen_doesNotDisplayImageWhenNoneAvailable() {
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = null,
+                existingImageData = null,
+                selectedImageUri = null,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {},
+                onSaveClick = {}
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("existing_image_preview")
+            .assertDoesNotExist()
+
+        composeTestRule
+            .onNodeWithTag("selected_image_preview")
             .assertDoesNotExist()
     }
 
