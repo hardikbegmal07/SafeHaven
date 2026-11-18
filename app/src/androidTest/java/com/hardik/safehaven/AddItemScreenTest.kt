@@ -465,4 +465,55 @@ class AddItemScreenTest {
             .assertDoesNotExist()
     }
 
+    // New image takes priority over existing image
+    @Test
+    fun addItemScreen_selectedImageTakesPriorityOverExistingImage() {
+
+        val bitmap = Bitmap.createBitmap(
+            100,
+            100,
+            Bitmap.Config.ARGB_8888
+        )
+
+        val outputStream = java.io.ByteArrayOutputStream()
+
+        bitmap.compress(
+            Bitmap.CompressFormat.PNG,
+            100,
+            outputStream
+        )
+
+        val existingImageBytes = outputStream.toByteArray()
+
+        val selectedUri = Uri.parse(
+            "content://com.hardik.safehaven.test/new-image"
+        )
+
+        launchAddItemScreenContent {
+            AddItemScreenContent(
+                title = "",
+                content = "",
+                type = ItemType.NOTE,
+                error = null,
+                existingImageData = existingImageBytes,
+                selectedImageUri = selectedUri,
+                onTitleChange = {},
+                onContentChange = {},
+                onTypeChange = {},
+                onUploadClick = {},
+                onSaveClick = {}
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("selected_image_preview")
+            .assertExists()
+
+        composeTestRule
+            .onNodeWithTag("existing_image_preview")
+            .assertDoesNotExist()
+
+        bitmap.recycle()
+    }
+
 }
