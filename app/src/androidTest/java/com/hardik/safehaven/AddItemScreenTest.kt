@@ -516,4 +516,113 @@ class AddItemScreenTest {
         bitmap.recycle()
     }
 
+    // combined form interaction test
+    /*
+        This is the most important test in this group bcz it verifies multiple interactions in one flow:
+        1. Enter a title
+        2. Enter content
+        3. Open to dropdown
+        4. select another item type.
+        5. verify all values
+        6. click save
+        7. verify the callback
+     */
+    @Test
+    fun addItemScreen_userCanFIllFormatSelectTypeAndSave() {
+
+        val titleState = mutableStateOf("")
+        val contentState = mutableStateOf("")
+        val typeState = mutableStateOf(ItemType.NOTE)
+        var saveClicked = false
+        val newType = ItemType.PASSWORD
+
+        launchAddItemScreenContent {
+
+            AddItemScreenContent(
+                title = titleState.value,
+                content = contentState.value,
+                type = typeState.value,
+                error = null,
+                existingImageData = null,
+                selectedImageUri = null,
+
+                onTitleChange = {
+                    titleState.value = it
+                },
+
+                onContentChange = {
+                    contentState.value = it
+                },
+
+                onTypeChange = {
+                    typeState.value = it
+                },
+
+                onUploadClick = {},
+
+                onSaveClick = {
+                    saveClicked = true
+                }
+            )
+        }
+
+        // Enter title.
+        composeTestRule
+            .onNodeWithTag("title_field")
+            .performTextInput("Driving Licence")
+
+        // Enter content.
+        composeTestRule
+            .onNodeWithTag("content_field")
+            .performTextInput(
+                "Personal identification document"
+            )
+
+        // Open dropdown.
+        composeTestRule
+            .onNodeWithTag("item_type_dropdown")
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        // Select PASSWORD.
+        composeTestRule
+            .onNodeWithText(newType.name)
+            .performClick()
+
+        composeTestRule.waitForIdle()
+
+        // Verify title.
+        assertEquals(
+            "Driving Licence",
+            titleState.value
+        )
+
+        // Verify content.
+        assertEquals(
+            "Personal identification document",
+            contentState.value
+        )
+
+        // Verify selected item type.
+        assertEquals(
+            ItemType.PASSWORD,
+            typeState.value
+        )
+
+        // Verify the selected type is displayed.
+        composeTestRule
+            .onNodeWithTag("item_type_dropdown")
+            .assertTextContains("PASSWORD")
+
+        // Click Save.
+        composeTestRule
+            .onNodeWithText("Save")
+            .performClick()
+
+        // Verify callback.
+        assertTrue(saveClicked)
+
+    }
+
 }

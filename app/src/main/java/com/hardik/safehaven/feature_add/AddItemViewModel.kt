@@ -109,6 +109,7 @@ class AddItemViewModel(
                         )
 
                         addItemUseCase(item)
+                        onSuccess()
 
                     } else {
 
@@ -125,11 +126,15 @@ class AddItemViewModel(
                             )
 
                             updateItemUseCase(updatedItem)
+                            onSuccess() // navigate after saving
+                        }
+                        else {
+                            _error.value = "Item not found"
                         }
 
                     }
 
-                    onSuccess() // navigate after saving
+
                 }
             }
         }
