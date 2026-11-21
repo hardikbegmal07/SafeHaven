@@ -7,9 +7,16 @@ import com.hardik.safehaven.domain.usecase.GetItemByIdUseCase
 import com.hardik.safehaven.domain.usecase.UpdateItemUseCase
 import com.hardik.safehaven.domain.usecase.ValidateItemUseCase
 import com.hardik.safehaven.feature_add.AddItemViewModel
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
@@ -57,5 +64,99 @@ class AddItemViewModelTest {
         )
     }
 
+    // initial state when adding a new item
+    @Test
+    fun addItemViewModel_initialState_returnsDefaultValues() =
+
+        runTest(mainDispatcherRule.testDispatcher) {
+
+            // Arrange
+            viewModel = AddItemViewModel(
+                addItemUseCase,
+                updateItemUseCase,
+                validateItemUseCase,
+                getItemByIdUseCase
+            )
+
+            // Assert
+            assertEquals("", viewModel.title)
+            assertEquals("", viewModel.content)
+            assertEquals(ItemType.NOTE, viewModel.type)
+            assertNull(viewModel.error.value)
+            assertNull(viewModel.existingImageData)
+
+        }
+
+    // Load an existing item for editing
+    @Test
+    fun addItemViewModel_existingItem_loadsItemDetails() =
+        runTest(mainDispatcherRule.testDispatcher) {
+
+            // Arrange
+            val existingItem = createTestSecureItem(
+                id = "doc_101",
+                title = "Driving Licence",
+                content = "Personal identification document",
+                type = ItemType.ID
+            )
+
+            every {
+                getItemByIdUseCase("doc_101")
+            } returns flowOf(existingItem)
+
+            // Act
+            viewModel = AddItemViewModel(
+                addItemUseCase,
+                updateItemUseCase,
+                validateItemUseCase,
+                getItemByIdUseCase,
+                editItemId = "doc_101"
+            )
+
+            advanceUntilIdle()
+
+            // Assert
+            assertEquals("Driving Licence", viewModel.title)
+            assertEquals(
+                "Personal identification document",
+                viewModel.content
+            )
+            assertEquals(ItemType.ID, viewModel.type)
+
+//            verify {
+//                getItemByIdUseCase("doc_101")
+//            }
+
+        }
+
+    // Invalid stored item type falls back to NOTE
+    @Test
+    fun addItemViewModel_invalidStoredType_returnsDefaultNoteType() =
+        runTest(mainDispatcherRule.testDispatcher) {
+
+            // Arrange
+            val existingItem = createTestSecureItem(
+                id = "doc_101"
+            ).copy(type = "INVALID_TYPE")
+
+            every {
+                getItemByIdUseCase("doc_101")
+            } returns flowOf(existingItem)
+
+            // Act
+            viewModel = AddItemViewModel(
+                addItemUseCase,
+                updateItemUseCase,
+                validateItemUseCase,
+                getItemByIdUseCase,
+                editItemId = "doc_101"
+            )
+
+            advanceUntilIdle()
+
+            // Assert
+            assertEquals(ItemType.NOTE, viewModel.type)
+
+        }
 
 }
